@@ -1,0 +1,9 @@
+{
+  "variants":
+  {
+    "facing=east": {"model": "leaguecraft:block/stealth_ward", "y":  90},
+    "facing=north": {"model": "leaguecraft:block/stealth_ward"},
+    "facing=south": {"model": "leaguecraft:block/stealth_ward", "y":  180},
+    "facing=west": {"model": "leaguecraft:block/stealth_ward", "y":  270}
+  }
+}
