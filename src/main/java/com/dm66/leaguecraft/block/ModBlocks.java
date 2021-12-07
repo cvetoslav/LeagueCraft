@@ -1,6 +1,7 @@
 package com.dm66.leaguecraft.block;
 
 import com.dm66.leaguecraft.LeagueCraftMod;
+import com.dm66.leaguecraft.item.ModItemGroups;
 import com.dm66.leaguecraft.item.ModItems;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -30,7 +31,7 @@ public class ModBlocks
 
     private static <T extends Block> void registerBlockItem(String name, Supplier<T> block)
     {
-        ModItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
+        ModItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties().group(ModItemGroups.LEAGUE_ITEMS)));
     }
 
     public static void register(IEventBus eventBus)

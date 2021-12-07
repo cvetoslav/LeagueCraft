@@ -13,7 +13,7 @@ public class ModItems
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, LeagueCraftMod.MOD_ID);
 
     public static final RegistryObject<Item> AUTO_ATTACK = ITEMS.register("autoattack",
-            () -> new BasicAttack(new Item.Properties().group(ItemGroup.COMBAT).maxStackSize(1).maxDamage(10)));
+            () -> new BasicAttack(new Item.Properties().group(ModItemGroups.LEAGUE_ITEMS).maxStackSize(1).maxDamage(10)));
 
     public static void register(IEventBus eventBus)
     {
