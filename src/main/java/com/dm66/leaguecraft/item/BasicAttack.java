@@ -5,6 +5,7 @@ import com.dm66.leaguecraft.entity.BasicAttackProjectile;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.BoatEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,6 +24,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.client.gui.ForgeIngameGui;
 import org.apache.logging.log4j.LogManager;
 
 import java.util.List;
@@ -59,7 +61,6 @@ public class BasicAttack extends Item
         Vector3d v = player.getLookVec();
         double min_ang = 1000000;
         Entity ret = null;
-        LogManager.getLogger(LeagueCraftMod.MOD_ID).info(es.size());
         for(Entity e : es)
         {
             Vector3d v1 = e.getPositionVec().subtract(player.getPositionVec());

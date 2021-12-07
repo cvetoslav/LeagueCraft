@@ -54,6 +54,7 @@ public class LeagueCraftMod
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new IngameHUD());
     }
 
     private void setup(final FMLCommonSetupEvent event)

@@ -11,7 +11,7 @@ public class ModItemGroups
         @Override
         public ItemStack createIcon()
         {
-            return null;
+            return new ItemStack(ModItems.AUTO_ATTACK.get());
         }
     };
 
@@ -20,7 +20,7 @@ public class ModItemGroups
         @Override
         public ItemStack createIcon()
         {
-            return null;
+            return new ItemStack(ModItems.AUTO_ATTACK.get());
         }
     };
 
