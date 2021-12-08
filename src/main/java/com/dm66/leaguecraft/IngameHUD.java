@@ -1,5 +1,6 @@
 package com.dm66.leaguecraft;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -25,14 +26,117 @@ public class IngameHUD extends AbstractGui
     @SubscribeEvent
     public void onRenderGameOverlay(RenderGameOverlayEvent event)
     {
-        if(!event.isCancelable() && event.getType() == RenderGameOverlayEvent.ElementType.ALL)
+        if(event.isCancelable()) return ;
+        if(event.getType() == RenderGameOverlayEvent.ElementType.ALL)
         {
             Minecraft mc = Minecraft.getInstance();
             int posX = event.getWindow().getScaledWidth() / 2 - 91 - 80;
             int posY = event.getWindow().getScaledHeight() - 38;
             mc.textureManager.bindTexture(new ResourceLocation("leaguecraft:textures/hud/hud.png"));
-            mc.fontRenderer.drawString(event.getMatrixStack(), "123", posX + 12, posY + 6, 0x123456);
             blit(event.getMatrixStack(), posX, posY, 0, 0, 77, 38, 77, 38);
+
+            int attackDamage  = 123;
+            int armor         = 123;
+            int attackSpeed   = 123;
+            int abilityPower  = 123;
+            int magicResist   = 123;
+            int movementSpeed = 123;
+
+            // AD
+            mc.fontRenderer.drawString(event.getMatrixStack(), Integer.toString(attackDamage), posX + 12, posY + 3, 0x6AE639);
+            // ARM
+            mc.fontRenderer.drawString(event.getMatrixStack(), Integer.toString(armor), posX + 12, posY + 15.5f, 0x6AE639);
+            // AS
+            mc.fontRenderer.drawString(event.getMatrixStack(), Integer.toString(attackSpeed), posX + 12, posY + 28.5f, 0x6AE639);
+            // AP
+            mc.fontRenderer.drawString(event.getMatrixStack(), Integer.toString(abilityPower), posX + 48.5f, posY + 3, 0x6AE639);
+            // MR
+            mc.fontRenderer.drawString(event.getMatrixStack(), Integer.toString(magicResist), posX + 48.5f, posY + 15.5f, 0x6AE639);
+            // MS
+            mc.fontRenderer.drawString(event.getMatrixStack(), Integer.toString(movementSpeed), posX + 48.5f, posY + 28.5f, 0x6AE639);
+
+            // Health Bar
+            int maxHealth      = 1501;
+            int health         = 1200;
+            int shield         = 1550;
+            int magicShield    = 300;
+            int physicalShield = 0;
+
+            posX = event.getWindow().getScaledWidth() / 2 - 91;
+            posY = event.getWindow().getScaledHeight() - 40;
+            int barWidth = 90;
+            int barHeight = 10;
+
+            int maxFill = Math.max(maxHealth, health + shield + magicShield + physicalShield);
+
+            mc.textureManager.bindTexture(new ResourceLocation("leaguecraft:textures/hud/health_bar.png"));
+            blit(event.getMatrixStack(), posX, posY, 0, 0, barWidth, barHeight, 90, 10);
+
+            int x = 90 * health / maxFill;
+            int t = 90000 / maxFill;
+            posX++; posY++; barHeight-=2; barWidth-=2;
+            mc.textureManager.bindTexture(new ResourceLocation("leaguecraft:textures/hud/health.png"));
+            blit(event.getMatrixStack(), posX, posY, 0, 0, t*(health/1000), barHeight, t, 9);
+            posX += t*(health/1000);
+            if(health % 1000 != 0)
+            {
+                blit(event.getMatrixStack(), posX, posY, 0, 0, t*(health%1000)/1000, barHeight, t, 9);
+                posX += t*(health%1000)/1000;
+            }
+
+            mc.textureManager.bindTexture(new ResourceLocation("leaguecraft:textures/hud/shield.png"));
+            blit(event.getMatrixStack(), posX, posY, 0, 0, t*(shield/1000), barHeight, t, 9);
+            posX += t*(shield/1000);
+            if(shield % 1000 != 0)
+            {
+                blit(event.getMatrixStack(), posX, posY, 0, 0, t*(shield%1000)/1000, barHeight, t, 9);
+                posX += t*(shield%1000)/1000;
+            }
+
+            mc.textureManager.bindTexture(new ResourceLocation("leaguecraft:textures/hud/magic_shield.png"));
+            blit(event.getMatrixStack(), posX, posY, 0, 0, t*(magicShield/1000), barHeight, t, 9);
+            posX += t*(magicShield/1000);
+            if(magicShield % 1000 != 0)
+            {
+                blit(event.getMatrixStack(), posX, posY, 0, 0, t*(magicShield%1000)/1000, barHeight, t, 9);
+                posX += t*(magicShield%1000)/1000;
+            }
+
+            mc.textureManager.bindTexture(new ResourceLocation("leaguecraft:textures/hud/physical_shield.png"));
+            blit(event.getMatrixStack(), posX, posY, 0, 0, t*(physicalShield/1000), barHeight, t, 9);
+            posX += t*(physicalShield/1000);
+            if(physicalShield % 1000 != 0)
+            {
+                blit(event.getMatrixStack(), posX, posY, 0, 0, t*(physicalShield%1000)/1000, barHeight, t, 9);
+                posX += t*(physicalShield%1000)/1000;
+            }
+
+            GlStateManager.scalef(0.5f, 0.5f, 0.5f);
+            String str = Integer.toString(health) + " / " + Integer.toString(maxHealth);
+            posX = event.getWindow().getScaledWidth() / 2 - 29 - mc.fontRenderer.getStringWidth(str) / 2;
+            mc.fontRenderer.drawString(event.getMatrixStack(), str, 2*posX, 2*(posY + 3), 0xb36b00);
+            GlStateManager.scalef(2f, 2f, 2f);
+
+            // Mana Bar
+            int mana = 650;
+            int maxMana = 880;
+
+            posX = event.getWindow().getScaledWidth() / 2 + 1;
+            posY = event.getWindow().getScaledHeight() - 40;
+            barHeight = 10;
+            barWidth = 90;
+
+            mc.textureManager.bindTexture(new ResourceLocation("leaguecraft:textures/hud/mana_bar.png"));
+            blit(event.getMatrixStack(), posX, posY, 0, 0, barWidth, barHeight, 90, 10);
+            mc.textureManager.bindTexture(new ResourceLocation("leaguecraft:textures/hud/mana.png"));
+            blit(event.getMatrixStack(), posX+1, posY+1, 0, 0, (barWidth-2)*mana/maxMana, barHeight-2, 70, 9);
+
+            GlStateManager.scalef(0.5f, 0.5f, 0.5f);
+            String str_ = Integer.toString(mana) + " / " + Integer.toString(maxMana);
+            posX = event.getWindow().getScaledWidth() / 2 + 63 - mc.fontRenderer.getStringWidth(str) / 2;
+            mc.fontRenderer.drawString(event.getMatrixStack(), str_, 2*posX, 2*(posY + 4), 0xb36b00);
+            GlStateManager.scalef(2f, 2f, 2f);
+
         }
     }
 }
