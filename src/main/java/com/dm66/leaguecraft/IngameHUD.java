@@ -36,19 +36,19 @@ public class IngameHUD extends AbstractGui
             mc.textureManager.bindTexture(new ResourceLocation("leaguecraft:textures/hud/hud.png"));
             blit(event.getMatrixStack(), posX, posY, 0, 0, 77, 38, 77, 38);
 
-            int attackDamage  = 123;
-            int armor         = 123;
-            int attackSpeed   = 123;
-            int abilityPower  = 123;
-            int magicResist   = 123;
-            int movementSpeed = 123;
+            int attackDamage  = (int) Math.round(summoner.attackDamage);
+            int armor         = (int) Math.round(summoner.armor);
+            double attackSpeed   = summoner.attackSpeed;
+            int abilityPower  = (int) Math.round(summoner.abilityPower);
+            int magicResist   = (int) Math.round(summoner.magicResist);
+            int movementSpeed = (int) Math.round(summoner.movementSpeed);
 
             // AD
             mc.fontRenderer.drawString(event.getMatrixStack(), Integer.toString(attackDamage), posX + 12, posY + 3, 0x6AE639);
             // ARM
             mc.fontRenderer.drawString(event.getMatrixStack(), Integer.toString(armor), posX + 12, posY + 15.5f, 0x6AE639);
             // AS
-            mc.fontRenderer.drawString(event.getMatrixStack(), Integer.toString(attackSpeed), posX + 12, posY + 28.5f, 0x6AE639);
+            mc.fontRenderer.drawString(event.getMatrixStack(), String.format("%.2f", attackSpeed), posX + 12, posY + 28.5f, 0x6AE639);
             // AP
             mc.fontRenderer.drawString(event.getMatrixStack(), Integer.toString(abilityPower), posX + 48.5f, posY + 3, 0x6AE639);
             // MR

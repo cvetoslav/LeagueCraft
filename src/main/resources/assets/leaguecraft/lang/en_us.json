@@ -1,6 +1,9 @@
 {
   "item.leaguecraft.autoattack" : "Auto Attack",
+
   "block.leaguecraft.stealth_ward" : "Stealth Ward",
+
+  "effect.leaguecraft.stasis" : "Stasis",
 
   "itemGroup.leagueItemsTab": "League Items",
   "itemGroup.leagueChampionsTab": "League Champions",

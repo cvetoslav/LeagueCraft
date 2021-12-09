@@ -1,6 +1,8 @@
 package com.dm66.leaguecraft.item;
 
 import com.dm66.leaguecraft.LeagueCraftMod;
+import com.dm66.leaguecraft.effect.ModEffects;
+import com.dm66.leaguecraft.effect.StasisEffect;
 import com.dm66.leaguecraft.entity.BasicAttackProjectile;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShulkerBoxBlock;
@@ -16,6 +18,9 @@ import net.minecraft.entity.projectile.SnowballEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.EffectType;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
@@ -44,7 +49,8 @@ public class BasicAttack extends Item
         if(!world.isRemote)
         {
             Entity entity = getLookingEntity(player, world);
-            entity.setFire(3);
+            if(entity != null) entity.setFire(3);
+            player.addPotionEffect(new EffectInstance(ModEffects.STASIS.get(), 100));
             //BasicAttackProjectile proj = new BasicAttackProjectile(player, world);
             ShulkerBulletEntity proj = new ShulkerBulletEntity(world, player, entity, null);
             //proj.setItem(is);
