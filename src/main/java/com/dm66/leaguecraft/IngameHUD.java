@@ -30,6 +30,7 @@ public class IngameHUD extends AbstractGui
         if(event.getType() == RenderGameOverlayEvent.ElementType.ALL)
         {
             Minecraft mc = Minecraft.getInstance();
+            Summoner summoner = Summoner.getSummoner(mc.player);
             int posX = event.getWindow().getScaledWidth() / 2 - 91 - 80;
             int posY = event.getWindow().getScaledHeight() - 38;
             mc.textureManager.bindTexture(new ResourceLocation("leaguecraft:textures/hud/hud.png"));
@@ -56,11 +57,11 @@ public class IngameHUD extends AbstractGui
             mc.fontRenderer.drawString(event.getMatrixStack(), Integer.toString(movementSpeed), posX + 48.5f, posY + 28.5f, 0x6AE639);
 
             // Health Bar
-            int maxHealth      = 1501;
-            int health         = 1200;
-            int shield         = 1550;
-            int magicShield    = 300;
-            int physicalShield = 0;
+            int maxHealth      = (int) Math.round(summoner.maxHealth);
+            int health         = (int) Math.round(summoner.health);
+            int shield         = (int) Math.round(summoner.shield);
+            int magicShield    = (int) Math.round(summoner.magicShield);
+            int physicalShield = (int) Math.round(summoner.physicalShield);
 
             posX = event.getWindow().getScaledWidth() / 2 - 91;
             posY = event.getWindow().getScaledHeight() - 40;
@@ -118,8 +119,8 @@ public class IngameHUD extends AbstractGui
             GlStateManager.scalef(2f, 2f, 2f);
 
             // Mana Bar
-            int mana = 650;
-            int maxMana = 880;
+            int mana = (int) Math.round(summoner.mana);
+            int maxMana = (int) Math.round(summoner.maxMana);
 
             posX = event.getWindow().getScaledWidth() / 2 + 1;
             posY = event.getWindow().getScaledHeight() - 40;
