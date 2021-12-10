@@ -1,14 +1,18 @@
 package com.dm66.leaguecraft.item;
 
 import com.dm66.leaguecraft.LeagueCraftMod;
+import com.dm66.leaguecraft.Summoner;
 import com.dm66.leaguecraft.effect.ModEffects;
 import com.dm66.leaguecraft.effect.StasisEffect;
 import com.dm66.leaguecraft.entity.BasicAttackProjectile;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShulkerBoxBlock;
+import net.minecraft.block.TallGrassBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.BoatEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
@@ -48,33 +52,37 @@ public class BasicAttack extends Item
         ItemStack is = player.getHeldItem(hand);
         if(!world.isRemote)
         {
-            Entity entity = getLookingEntity(player, world);
-            if(entity != null) entity.setFire(3);
-            player.addPotionEffect(new EffectInstance(ModEffects.STASIS.get(), 100));
-            //BasicAttackProjectile proj = new BasicAttackProjectile(player, world);
-            ShulkerBulletEntity proj = new ShulkerBulletEntity(world, player, entity, null);
-            //proj.setItem(is);
-            proj.shoot(player.getLookVec().x, player.getLookVec().y, player.getLookVec().z, 0.1f, 0.0f);
-            world.addEntity(proj);
+            LivingEntity entity = getLookingEntity(player, world);
+            //Summoner.getSummoner(player).addEffect(ModEffects.STASIS.get(), 100);
+            if(entity!=null)
+            {
+                BasicAttackProjectile proj = new BasicAttackProjectile(player);
+                proj.setPosition(player.getPosX(), player.getPosY(), player.getPosZ());
+                proj.setTarget(entity);
+                world.addEntity(proj);
+            }
         }
         return ActionResult.resultSuccess(is);
     }
 
-    private Entity getLookingEntity(PlayerEntity player, World world)
+    private LivingEntity getLookingEntity(PlayerEntity player, World world)
     {
-        AxisAlignedBB aabb = new AxisAlignedBB(player.getPosX()-5, player.getPosY()-5, player.getPosZ()-5, player.getPosX()+5, player.getPosY()+5, player.getPosZ()+5);
+        AxisAlignedBB aabb = new AxisAlignedBB(player.getPosX()-15, player.getPosY()-15, player.getPosZ()-15, player.getPosX()+15, player.getPosY()+15, player.getPosZ()+15);
         List<Entity> es = world.getEntitiesWithinAABB(Entity.class, aabb);
         Vector3d v = player.getLookVec();
         double min_ang = 1000000;
-        Entity ret = null;
+        LivingEntity ret = null;
         for(Entity e : es)
         {
-            Vector3d v1 = e.getPositionVec().subtract(player.getPositionVec());
-            double ang = Math.acos(v.dotProduct(v1)/v.length()/v1.length());
-            if(ang < min_ang && e != (Entity)player)
+            if(e instanceof LivingEntity)
             {
-                min_ang = ang;
-                ret = e;
+                Vector3d v1 = e.getPositionVec().subtract(player.getPositionVec());
+                double ang = Math.acos(v.dotProduct(v1) / v.length() / v1.length());
+                if (ang < min_ang && e != player)
+                {
+                    min_ang = ang;
+                    ret = (LivingEntity) e;
+                }
             }
         }
         return ret;

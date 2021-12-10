@@ -1,55 +1,125 @@
 package com.dm66.leaguecraft.entity;
 
+import com.dm66.leaguecraft.Summoner;
 import com.dm66.leaguecraft.item.ModItems;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.IRendersAsItem;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileItemEntity;
-import net.minecraft.entity.projectile.ShulkerBulletEntity;
-import net.minecraft.item.Item;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ThrowableEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
-public class BasicAttackProjectile extends ProjectileItemEntity
+import javax.annotation.Nonnull;
+import java.util.List;
+
+public class BasicAttackProjectile extends ThrowableEntity implements IRendersAsItem
 {
+    private static final DataParameter<Integer> TARGET = EntityDataManager.createKey(BasicAttackProjectile.class, DataSerializers.VARINT);
+
+    double lockX, lockY = -1, lockZ;
+
     public BasicAttackProjectile(EntityType<BasicAttackProjectile> type, World world)
     {
         super(type, world);
     }
 
-    public BasicAttackProjectile(LivingEntity player, World world)
+    public BasicAttackProjectile(LivingEntity owner)
     {
-        super(ModEntities.AUTO_ATTACK_PROJECTILE.get(), player, world);
-    }
-
-    public BasicAttackProjectile(double x, double y, double z, World world)
-    {
-        super(ModEntities.AUTO_ATTACK_PROJECTILE.get(), x,y,z, world);
+        super(ModEntities.AUTO_ATTACK_PROJECTILE.get(), owner, owner.world);
     }
 
     @Override
-    protected Item getDefaultItem()
+    protected void registerData()
     {
-        return ModItems.AUTO_ATTACK.get().asItem();
+        dataManager.register(TARGET, 0);
     }
 
+    @Nonnull
     @Override
-    public net.minecraft.network.IPacket<?> createSpawnPacket()
+    public IPacket<?> createSpawnPacket()
     {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-    @Override
-    protected void onImpact(RayTraceResult res)
+    public void setTarget(LivingEntity e)
     {
-        if(res.getType() == RayTraceResult.Type.ENTITY)
+        dataManager.set(TARGET, e == null ? -1 : e.getEntityId());
+    }
+
+    public LivingEntity getTargetEntity()
+    {
+        int id = dataManager.get(TARGET);
+        Entity e = world.getEntityByID(id);
+        if (e instanceof LivingEntity)
         {
-            ((EntityRayTraceResult)res).getEntity().setFire(3);
+            return (LivingEntity) e;
         }
-        this.remove();
+        return null;
+    }
+
+    @Override
+    public void tick()
+    {
+        double lastTickPosX = this.lastTickPosX;
+        double lastTickPosY = this.lastTickPosY;
+        double lastTickPosZ = this.lastTickPosZ;
+
+        super.tick();
+
+        Vector3d thisVec = this.getPositionVec();
+
+        LivingEntity target = getTargetEntity();
+        if (target != null)
+        {
+
+            Vector3d targetVec = new Vector3d(target.getPosX(), target.getPosY() + 0.5, target.getPosZ());
+            Vector3d diffVec = targetVec.subtract(thisVec);
+            Vector3d motionVec = diffVec.normalize().scale(0.3);
+            setMotion(motionVec);
+
+            /*List<LivingEntity> targetList = world.getEntitiesWithinAABB(LivingEntity.class, new AxisAlignedBB(getPosX() - 0.5, getPosY() - 0.5, getPosZ() - 0.5, getPosX() + 0.5, getPosY() + 0.5, getPosZ() + 0.5));
+            if (targetList.contains(target))
+            {
+                Entity owner = func_234616_v_();
+                if (owner instanceof LivingEntity) {
+                    PlayerEntity player = owner instanceof PlayerEntity ? (PlayerEntity) owner : null;
+                    target.attackEntityFrom(player == null ? DamageSource.causeMobDamage((LivingEntity) owner) : DamageSource.causePlayerDamage(player), evil ? 12 : 7);
+                } else {
+                    target.attackEntityFrom(DamageSource.GENERIC, evil ? 12 : 7);
+                }
+
+                remove();
+            }*/
+        }
+        else remove();
+
+    }
+
+    @Override
+    protected void onEntityHit(EntityRayTraceResult result)
+    {
+        if(result.getEntity() instanceof LivingEntity && result.getEntity() == getTargetEntity())
+        {
+            result.getEntity().setFire(3);
+            remove();
+        }
+    }
+
+    @Override
+    public ItemStack getItem()
+    {
+        return ModItems.AUTO_ATTACK.get().getDefaultInstance();
     }
 }

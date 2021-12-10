@@ -2,12 +2,15 @@ package com.dm66.leaguecraft;
 
 import com.dm66.leaguecraft.block.ModBlocks;
 import com.dm66.leaguecraft.effect.ModEffects;
+import com.dm66.leaguecraft.entity.BasicAttackProjectile;
 import com.dm66.leaguecraft.entity.ModEntities;
 import com.dm66.leaguecraft.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.SpriteRenderer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -15,6 +18,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.thread.SidedThreadGroup;
@@ -80,7 +84,14 @@ public class LeagueCraftMod
     {
         ItemRenderer rend = mc.get().getItemRenderer();
 
-        RenderingRegistry.registerEntityRenderingHandler(ModEntities.AUTO_ATTACK_PROJECTILE.get(), (rendMan) -> new SpriteRenderer<>(rendMan, rend));
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.AUTO_ATTACK_PROJECTILE.get(), new IRenderFactory<BasicAttackProjectile>()
+        {
+            @Override
+            public EntityRenderer<? super BasicAttackProjectile> createRenderFor(EntityRendererManager manager)
+            {
+                return new SpriteRenderer(manager, Minecraft.getInstance().getItemRenderer());
+            }
+        });
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)
