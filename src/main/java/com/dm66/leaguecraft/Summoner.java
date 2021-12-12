@@ -1,11 +1,17 @@
 package com.dm66.leaguecraft;
 
+import com.dm66.leaguecraft.champion.Champion;
 import com.dm66.leaguecraft.effect.ModEffects;
+import com.dm66.leaguecraft.item.BasicAttack;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.entity.ArrowRenderer;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -38,8 +44,14 @@ public class Summoner
 
     public double movementSpeed;
 
+    public int basicAttackCD = 0;
+    public int QAbilityCD = 0;
+    public int WAbilityCD = 0;
+    public int EAbilityCD = 0;
+    public int RAbilityCD = 0;
+
     // TODO: add champion specific base stats
-    // public Champion champion;
+     public Champion champion;
 
     public Summoner(PlayerEntity player)
     {
@@ -53,7 +65,7 @@ public class Summoner
         maxMana = 880;
         manaRegen = 0.2;
         attackDamage = 69;
-        attackSpeed = 0.7;
+        attackSpeed = 2.5;
         abilityPower = 42;
         armor = 15;
         magicResist = 13;
@@ -63,11 +75,31 @@ public class Summoner
     @SubscribeEvent
     public static void tick(TickEvent.PlayerTickEvent event)
     {
+        if(event.phase == TickEvent.Phase.END || event.player.world.isRemote()) return;
         Summoner s = Summoner.getSummoner(event.player);
+        s.updateCoolDowns();
         s.health += s.healthRegen / 20;
         if(s.health > s.maxHealth) s.health = s.maxHealth;
         s.mana += s.manaRegen / 20;
         if(s.mana > s.maxMana) s.mana = s.maxMana;
+    }
+
+    public void updateCoolDowns()
+    {
+        if(basicAttackCD > 0) basicAttackCD--;
+        for(int i=0;i<36;i++)
+        {
+            ItemStack is = player.inventory.mainInventory.get(i);
+            if(is.getItem() instanceof BasicAttack)
+            {
+                is.getItem().setDamage(is, (int) Math.round(10.0*basicAttackCD/Math.round(20.0/attackSpeed)));
+                break;
+            }
+        }
+        if(QAbilityCD > 0) QAbilityCD--;
+        if(WAbilityCD > 0) WAbilityCD--;
+        if(EAbilityCD > 0) EAbilityCD--;
+        if(RAbilityCD > 0) RAbilityCD--;
     }
 
     public void addEffect(Effect effect, int duration)

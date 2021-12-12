@@ -2,6 +2,7 @@ package com.dm66.leaguecraft.item;
 
 import com.dm66.leaguecraft.LeagueCraftMod;
 import com.dm66.leaguecraft.Summoner;
+import com.dm66.leaguecraft.ability.Ability;
 import com.dm66.leaguecraft.effect.ModEffects;
 import com.dm66.leaguecraft.effect.StasisEffect;
 import com.dm66.leaguecraft.entity.BasicAttackProjectile;
@@ -52,14 +53,16 @@ public class BasicAttack extends Item
         ItemStack is = player.getHeldItem(hand);
         if(!world.isRemote)
         {
+            Summoner s = Summoner.getSummoner(player);
+            if(s.basicAttackCD > 0) return ActionResult.resultFail(is);
             LivingEntity entity = getLookingEntity(player, world);
-            //Summoner.getSummoner(player).addEffect(ModEffects.STASIS.get(), 100);
-            if(entity!=null)
+            if(entity != null)
             {
                 BasicAttackProjectile proj = new BasicAttackProjectile(player);
                 proj.setPosition(player.getPosX(), player.getPosY(), player.getPosZ());
                 proj.setTarget(entity);
                 world.addEntity(proj);
+                s.basicAttackCD = (int) Math.round(20.0/s.attackSpeed);
             }
         }
         return ActionResult.resultSuccess(is);
@@ -86,6 +89,12 @@ public class BasicAttack extends Item
             }
         }
         return ret;
+    }
+
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged)
+    {
+        return slotChanged;
     }
 
 }

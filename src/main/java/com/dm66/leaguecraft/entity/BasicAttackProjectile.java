@@ -28,8 +28,6 @@ public class BasicAttackProjectile extends ThrowableEntity implements IRendersAs
 {
     private static final DataParameter<Integer> TARGET = EntityDataManager.createKey(BasicAttackProjectile.class, DataSerializers.VARINT);
 
-    double lockX, lockY = -1, lockZ;
-
     public BasicAttackProjectile(EntityType<BasicAttackProjectile> type, World world)
     {
         super(type, world);
@@ -72,9 +70,6 @@ public class BasicAttackProjectile extends ThrowableEntity implements IRendersAs
     @Override
     public void tick()
     {
-        double lastTickPosX = this.lastTickPosX;
-        double lastTickPosY = this.lastTickPosY;
-        double lastTickPosZ = this.lastTickPosZ;
 
         super.tick();
 
