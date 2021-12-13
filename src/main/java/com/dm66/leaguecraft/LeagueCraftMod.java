@@ -4,6 +4,7 @@ import com.dm66.leaguecraft.block.ModBlocks;
 import com.dm66.leaguecraft.effect.ModEffects;
 import com.dm66.leaguecraft.entity.BasicAttackProjectile;
 import com.dm66.leaguecraft.entity.ModEntities;
+import com.dm66.leaguecraft.entity.render.BasicAttackProjectileRenderer;
 import com.dm66.leaguecraft.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -84,14 +85,7 @@ public class LeagueCraftMod
     {
         ItemRenderer rend = mc.get().getItemRenderer();
 
-        RenderingRegistry.registerEntityRenderingHandler(ModEntities.AUTO_ATTACK_PROJECTILE.get(), new IRenderFactory<BasicAttackProjectile>()
-        {
-            @Override
-            public EntityRenderer<? super BasicAttackProjectile> createRenderFor(EntityRendererManager manager)
-            {
-                return new SpriteRenderer(manager, Minecraft.getInstance().getItemRenderer());
-            }
-        });
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.AUTO_ATTACK_PROJECTILE.get(), BasicAttackProjectileRenderer::new);
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)

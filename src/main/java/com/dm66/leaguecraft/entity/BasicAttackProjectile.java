@@ -2,12 +2,16 @@ package com.dm66.leaguecraft.entity;
 
 import com.dm66.leaguecraft.Summoner;
 import com.dm66.leaguecraft.item.ModItems;
+import net.minecraft.client.renderer.entity.ArrowRenderer;
+import net.minecraft.client.renderer.entity.TridentRenderer;
+import net.minecraft.client.renderer.entity.model.TridentModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.IRendersAsItem;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ThrowableEntity;
+import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
