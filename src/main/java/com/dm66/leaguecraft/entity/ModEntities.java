@@ -1,11 +1,8 @@
 package com.dm66.leaguecraft.entity;
 
 import com.dm66.leaguecraft.LeagueCraftMod;
-import com.dm66.leaguecraft.item.BasicAttack;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;

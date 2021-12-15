@@ -2,35 +2,25 @@ package com.dm66.leaguecraft;
 
 import com.dm66.leaguecraft.block.ModBlocks;
 import com.dm66.leaguecraft.effect.ModEffects;
-import com.dm66.leaguecraft.entity.BasicAttackProjectile;
 import com.dm66.leaguecraft.entity.ModEntities;
 import com.dm66.leaguecraft.entity.render.BasicAttackProjectileRenderer;
 import com.dm66.leaguecraft.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.entity.SpriteRenderer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.InterModComms;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.thread.SidedThreadGroup;
-import net.minecraftforge.fml.common.thread.SidedThreadGroups;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.network.NetworkRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -83,9 +73,8 @@ public class LeagueCraftMod
 
     private void registerEntityModels(Supplier<Minecraft> mc)
     {
-        ItemRenderer rend = mc.get().getItemRenderer();
-
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.AUTO_ATTACK_PROJECTILE.get(), BasicAttackProjectileRenderer::new);
+
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)
@@ -100,6 +89,7 @@ public class LeagueCraftMod
                 map(m->m.getMessageSupplier().get()).
                 collect(Collectors.toList()));
     }
+
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event)

@@ -10,7 +10,6 @@ import net.minecraft.util.ResourceLocation;
 
 public class BasicAttackProjectileModel extends Model
 {
-    //private final ModelRenderer modelRenderer = new ModelRenderer(32, 32, 0, 6);
 
     private final ModelRenderer bone;
     private final ModelRenderer cube_r1;

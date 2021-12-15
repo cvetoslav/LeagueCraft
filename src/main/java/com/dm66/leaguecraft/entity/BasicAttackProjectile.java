@@ -28,7 +28,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class BasicAttackProjectile extends ThrowableEntity implements IRendersAsItem
+public class BasicAttackProjectile extends ThrowableEntity
 {
     private static final DataParameter<Integer> TARGET = EntityDataManager.createKey(BasicAttackProjectile.class, DataSerializers.VARINT);
 
@@ -115,10 +115,5 @@ public class BasicAttackProjectile extends ThrowableEntity implements IRendersAs
             remove();
         }
     }
-
-    @Override
-    public ItemStack getItem()
-    {
-        return ModItems.AUTO_ATTACK.get().getDefaultInstance();
-    }
+    
 }

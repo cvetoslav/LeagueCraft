@@ -1,4 +1,4 @@
-package com.dm66.leaguecraft.item;
+package com.dm66.leaguecraft.item.ability_items;
 
 import com.dm66.leaguecraft.LeagueCraftMod;
 import com.dm66.leaguecraft.Summoner;
@@ -40,44 +40,23 @@ import org.apache.logging.log4j.LogManager;
 import java.util.List;
 import java.util.Random;
 
-public class BasicAttack extends Item
+public abstract class AbilityItem extends Item
 {
-    public BasicAttack(Properties p)
+    public AbilityItem(Properties p)
     {
         super(p);
     }
 
-    @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
+    protected LivingEntity getTargetedEntity(PlayerEntity player, World world, double range)
     {
-        ItemStack is = player.getHeldItem(hand);
-        if(!world.isRemote)
-        {
-            Summoner s = Summoner.getSummoner(player);
-            if(s.basicAttackCD > 0) return ActionResult.resultFail(is);
-            LivingEntity entity = getLookingEntity(player, world);
-            if(entity != null)
-            {
-                BasicAttackProjectile proj = new BasicAttackProjectile(player);
-                proj.setPosition(player.getPosX(), player.getPosY(), player.getPosZ());
-                proj.setTarget(entity);
-                world.addEntity(proj);
-                s.basicAttackCD = (int) Math.round(20.0/s.attackSpeed);
-            }
-        }
-        return ActionResult.resultSuccess(is);
-    }
-
-    private LivingEntity getLookingEntity(PlayerEntity player, World world)
-    {
-        AxisAlignedBB aabb = new AxisAlignedBB(player.getPosX()-15, player.getPosY()-15, player.getPosZ()-15, player.getPosX()+15, player.getPosY()+15, player.getPosZ()+15);
+        AxisAlignedBB aabb = new AxisAlignedBB(player.getPosX() - range, player.getPosY() - range, player.getPosZ() - range, player.getPosX() + range, player.getPosY() + range, player.getPosZ() + range);
         List<Entity> es = world.getEntitiesWithinAABB(Entity.class, aabb);
         Vector3d v = player.getLookVec();
         double min_ang = 1000000;
         LivingEntity ret = null;
         for(Entity e : es)
         {
-            if(e instanceof LivingEntity)
+            if(e instanceof LivingEntity && player.getDistance(e) <= range)
             {
                 Vector3d v1 = e.getPositionVec().subtract(player.getPositionVec());
                 double ang = Math.acos(v.dotProduct(v1) / v.length() / v1.length());
