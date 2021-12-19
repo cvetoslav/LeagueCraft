@@ -56,6 +56,7 @@ public class LeagueCraftMod
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new IngameHUD());
+        MinecraftForge.EVENT_BUS.register(WorldProjectionRenderer.class);
         MinecraftForge.EVENT_BUS.register(Summoner.class);
     }
 

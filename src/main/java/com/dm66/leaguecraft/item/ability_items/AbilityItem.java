@@ -52,10 +52,12 @@ public abstract class AbilityItem extends Item
         AxisAlignedBB aabb = new AxisAlignedBB(player.getPosX() - range, player.getPosY() - range, player.getPosZ() - range, player.getPosX() + range, player.getPosY() + range, player.getPosZ() + range);
         List<Entity> es = world.getEntitiesWithinAABB(Entity.class, aabb);
         Vector3d v = player.getLookVec();
+        // TODO: adjust the max targeting lock angle ( FOV ? )
         double min_ang = 1000000;
         LivingEntity ret = null;
         for(Entity e : es)
         {
+            // TODO: add target filtering (ally, enemy, summoner, minion, ...)
             if(e instanceof LivingEntity && player.getDistance(e) <= range)
             {
                 Vector3d v1 = e.getPositionVec().subtract(player.getPositionVec());

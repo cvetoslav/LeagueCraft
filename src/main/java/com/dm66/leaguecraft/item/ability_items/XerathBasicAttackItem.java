@@ -9,9 +9,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
-public class XerathBasicAttack extends AbilityItem
+public class XerathBasicAttackItem extends AbilityItem
 {
-    public XerathBasicAttack(Properties p)
+    public XerathBasicAttackItem(Properties p)
     {
         super(p);
     }

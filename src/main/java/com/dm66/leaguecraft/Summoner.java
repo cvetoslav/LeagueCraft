@@ -1,7 +1,7 @@
 package com.dm66.leaguecraft;
 
 import com.dm66.leaguecraft.champion.Champion;
-import com.dm66.leaguecraft.item.ability_items.BasicAttack;
+import com.dm66.leaguecraft.item.ability_items.BasicAttackItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Effect;
@@ -84,7 +84,7 @@ public class Summoner
         for(int i=0;i<36;i++)
         {
             ItemStack is = player.inventory.mainInventory.get(i);
-            if(is.getItem() instanceof BasicAttack)
+            if(is.getItem() instanceof BasicAttackItem)
             {
                 is.getItem().setDamage(is, (int) Math.round(10.0*basicAttackCD/Math.round(20.0/attackSpeed)));
                 break;

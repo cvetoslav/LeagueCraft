@@ -2,7 +2,6 @@ package com.dm66.leaguecraft.item.ability_items;
 
 import com.dm66.leaguecraft.Summoner;
 import com.dm66.leaguecraft.entity.BasicAttackProjectile;
-import com.dm66.leaguecraft.item.ability_items.AbilityItem;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -10,9 +9,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
-public class BasicAttack extends AbilityItem
+public class BasicAttackItem extends AbilityItem
 {
-    public BasicAttack(Properties p)
+    public BasicAttackItem(Properties p)
     {
         super(p);
     }
