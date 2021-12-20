@@ -1,10 +1,14 @@
 package com.dm66.leaguecraft;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -21,75 +25,59 @@ public class WorldProjectionRenderer
     @OnlyIn(Dist.CLIENT)
     public static void onWorldRender(RenderWorldLastEvent event)
     {
-        PlayerEntity p = Minecraft.getInstance().player;
-        drawBoundingBox(p.getPositionVec(), p.getPositionVec(), p.getPositionVec().add(3,3,3), 3);
+        GL11.glLineWidth(5);
+        BufferBuilder b = Tessellator.getInstance().getBuffer();
+        b.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+        renderOverlay(event.getPartialTicks(), event.getMatrixStack(), b);
+        Tessellator.getInstance().draw();
     }
 
-    public static void drawBoundingBox(Vector3d player_pos, Vector3d posA, Vector3d posB, float width)
+    private static void renderOverlay(float partialTicks, MatrixStack stack, IVertexBuilder consumer)
     {
-        GL11.glPushMatrix();
-        GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glTranslated(-player_pos.x, -player_pos.y, -player_pos.z);
-
-        Color c = new Color(255, 0, 0, 150);
-        GL11.glColor4d(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
-        GL11.glLineWidth(width);
-        GL11.glDepthMask(false);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-
-        double dx = 3;//Math.abs(posA.x - posB.x);
-        double dy = 3;//Math.abs(posA.y - posB.y);
-        double dz = 3;//Math.abs(posA.z - posB.z);
-
-        //AB
-        bufferBuilder.pos(posA.x, posA.y, posA.z).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();          //A
-        bufferBuilder.pos(posA.x, posA.y, posA.z+dz).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();       //B
-        //BC
-        bufferBuilder.pos(posA.x, posA.y, posA.z+dz).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();       //B
-        bufferBuilder.pos(posA.x+dx, posA.y, posA.z+dz).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();    //C
-        //CD
-        bufferBuilder.pos(posA.x+dx, posA.y, posA.z+dz).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();    //C
-        bufferBuilder.pos(posA.x+dx, posA.y, posA.z).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();       //D
-        //DA
-        bufferBuilder.pos(posA.x+dx, posA.y, posA.z).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();       //D
-        bufferBuilder.pos(posA.x, posA.y, posA.z).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();          //A
-        //EF
-        bufferBuilder.pos(posA.x, posA.y+dy, posA.z).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();       //E
-        bufferBuilder.pos(posA.x, posA.y+dy, posA.z+dz).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();    //F
-        //FG
-        bufferBuilder.pos(posA.x, posA.y+dy, posA.z+dz).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();    //F
-        bufferBuilder.pos(posA.x+dx, posA.y+dy, posA.z+dz).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex(); //G
-        //GH
-        bufferBuilder.pos(posA.x+dx, posA.y+dy, posA.z+dz).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex(); //G
-        bufferBuilder.pos(posA.x+dx, posA.y+dy, posA.z).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();    //H
-        //HE
-        bufferBuilder.pos(posA.x+dx, posA.y+dy, posA.z).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();    //H
-        bufferBuilder.pos(posA.x, posA.y+dy, posA.z).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();       //E
-        //AE
-        bufferBuilder.pos(posA.x, posA.y, posA.z).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();          //A
-        bufferBuilder.pos(posA.x, posA.y+dy, posA.z).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();       //E
-        //BF
-        bufferBuilder.pos(posA.x, posA.y, posA.z+dz).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();       //B
-        bufferBuilder.pos(posA.x, posA.y+dy, posA.z+dz).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();    //F
-        //CG
-        bufferBuilder.pos(posA.x+dx, posA.y, posA.z+dz).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();    //C
-        bufferBuilder.pos(posA.x+dx, posA.y+dy, posA.z+dz).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex(); //G
-        //DH
-        bufferBuilder.pos(posA.x+dx, posA.y, posA.z).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();       //D
-        bufferBuilder.pos(posA.x+dx, posA.y+dy, posA.z).color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()).endVertex();    //H
-
-        tessellator.draw();
-
-        GL11.glDepthMask(true);
-        GL11.glPopAttrib();
-        GL11.glPopMatrix();
+        Entity player = Minecraft.getInstance().getRenderViewEntity();
+        double cameraX = player.lastTickPosX + (player.getPosX() - player.lastTickPosX) * (double)partialTicks;
+        double cameraY = player.lastTickPosY + (player.getPosY() - player.lastTickPosY) * (double)partialTicks + player.getEyeHeight(player.getPose());
+        double cameraZ = player.lastTickPosZ + (player.getPosZ() - player.lastTickPosZ) * (double)partialTicks;
+        stack.push();
+        stack.translate(-cameraX, -cameraY, -cameraZ);
+        double posX = cameraX;
+        double posY = player.lastTickPosY + (player.getPosY() - player.lastTickPosY) * (double)partialTicks + 0.2;
+        double posZ = cameraZ;
+        Vector3d lookVec = player.getLookVec();
+        lookVec = new Vector3d(lookVec.x, 0 ,lookVec.z).normalize();
+        Vector3d right = lookVec.crossProduct(new Vector3d(0,1,0));
+        Vector3d left = right.scale(-1);
+        double range = 4.2;
+        drawLine(consumer, stack, new Vector3d(posX, posY, posZ).add(right.scale(0.5)), new Vector3d(posX, posY, posZ).add(right.scale(0.5)).add(lookVec.scale(range)), 85, 247, 240);
+        drawLine(consumer, stack, new Vector3d(posX, posY, posZ).add(left.scale(0.5)), new Vector3d(posX, posY, posZ).add(left.scale(0.5)).add(lookVec.scale(range)), 85, 247, 240);
+        stack.pop();
     }
+
+    private static void drawLine(IVertexBuilder consumer, MatrixStack stack, float x1, float y1, float z1, float x2, float y2, float z2, int red, int green, int blue)
+    {
+        drawLine(consumer, stack, x1, y1, z1, x2, y2, z2, red, green, blue, 1);
+    }
+
+    private static void drawLine(IVertexBuilder consumer, MatrixStack stack, Vector3d a, Vector3d b, int red, int green, int blue)
+    {
+        drawLine(consumer, stack, a, b, red, green, blue, 1);
+    }
+
+    private static void drawLine(IVertexBuilder consumer, MatrixStack stack, Vector3d a, Vector3d b, int red, int green, int blue, int alpha)
+    {
+        drawLine(consumer, stack, (float) a.x, (float) a.y, (float) a.z, (float) b.x, (float) b.y, (float) b.z, red, green, blue, alpha);
+    }
+
+    private static void drawLine(IVertexBuilder consumer, MatrixStack stack, float x1, float y1, float z1, float x2, float y2, float z2, int red, int green, int blue, int alpha)
+    {
+        Matrix4f model = stack.getLast().getMatrix();
+        consumer.pos(model, x1, y1, z1).color(col2flo(red), col2flo(green), col2flo(blue), col2flo(alpha)).endVertex();
+        consumer.pos(model, x2, y2, z2).color(col2flo(red), col2flo(green), col2flo(blue), col2flo(alpha)).endVertex();
+    }
+
+    private static float col2flo(int col)
+    {
+        return (float)col/255;
+    }
+
 }
