@@ -4,6 +4,7 @@ import com.dm66.leaguecraft.block.ModBlocks;
 import com.dm66.leaguecraft.effect.ModEffects;
 import com.dm66.leaguecraft.entity.ModEntities;
 import com.dm66.leaguecraft.entity.render.BasicAttackProjectileRenderer;
+import com.dm66.leaguecraft.entity.render.BlueCasterMinionRenderer;
 import com.dm66.leaguecraft.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -75,7 +76,7 @@ public class LeagueCraftMod
     private void registerEntityModels(Supplier<Minecraft> mc)
     {
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.AUTO_ATTACK_PROJECTILE.get(), BasicAttackProjectileRenderer::new);
-
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.BLUE_CASTER_MINION.get(), BlueCasterMinionRenderer::new);
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)
