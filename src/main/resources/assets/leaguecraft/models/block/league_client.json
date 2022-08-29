@@ -1,0 +1,22 @@
+{
+	"credit": "Made with Blockbench",
+	"texture_size": [5728, 1908],
+	"textures": {
+		"0": "leaguecraft:block/league_client",
+		"particle": "leaguecraft:block/league_client"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 16, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 5.32961, 16], "texture": "#0"},
+				"east": {"uv": [5.3352, 0, 10.6648, 16], "texture": "#0"},
+				"south": {"uv": [10.6648, 0, 15.99441, 16], "texture": "#0"},
+				"west": {"uv": [5.3352, 0, 10.6648, 16], "texture": "#0"},
+				"up": {"uv": [5.3352, 0, 10.6648, 16], "texture": "#0"},
+				"down": {"uv": [5.3352, 0, 10.6648, 16], "texture": "#0"}
+			}
+		}
+	]
+}

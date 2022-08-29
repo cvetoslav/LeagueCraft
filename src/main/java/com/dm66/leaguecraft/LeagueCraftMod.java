@@ -6,6 +6,8 @@ import com.dm66.leaguecraft.entity.ModEntities;
 import com.dm66.leaguecraft.entity.render.BasicAttackProjectileRenderer;
 import com.dm66.leaguecraft.entity.render.BlueCasterMinionRenderer;
 import com.dm66.leaguecraft.item.ModItems;
+import com.dm66.leaguecraft.rendering.IngameHUD;
+import com.dm66.leaguecraft.rendering.WorldProjectionRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;

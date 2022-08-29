@@ -22,6 +22,9 @@ public class ModBlocks
     public static final RegistryObject<Block> STEALTH_WARD = registerBlock("stealth_ward",
             () -> new StealthWardBlock(AbstractBlock.Properties.create(Material.IRON).notSolid()));
 
+    public static final RegistryObject<Block> LEAGUE_CLIENT = registerBlock("league_client",
+            () -> new LeagueClientBlock(AbstractBlock.Properties.create(Material.IRON).hardnessAndResistance(100f)));
+
     private static <T extends Block>RegistryObject<T> registerBlock(String name, Supplier<T> block)
     {
         RegistryObject<T> ret = BLOCKS.register(name, block);

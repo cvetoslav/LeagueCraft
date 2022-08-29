@@ -1,0 +1,6 @@
+{
+  "variants":
+  {
+    "": {"model": "leaguecraft:block/league_client" }
+  }
+}

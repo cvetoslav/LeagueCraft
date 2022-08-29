@@ -1,4 +1,4 @@
-package com.dm66.leaguecraft;
+package com.dm66.leaguecraft.rendering;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;

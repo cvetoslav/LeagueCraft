@@ -8,5 +8,7 @@
 
   "itemGroup.leagueItemsTab": "League Items",
   "itemGroup.leagueChampionsTab": "League Champions",
-  "itemGroup.leagueAbilitiesTab": "League Abilities"
+  "itemGroup.leagueAbilitiesTab": "League Abilities",
+
+  "screen.leaguecraft.client": "League of Bugs"
 }

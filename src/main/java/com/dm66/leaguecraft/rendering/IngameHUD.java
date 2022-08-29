@@ -1,5 +1,6 @@
-package com.dm66.leaguecraft;
+package com.dm66.leaguecraft.rendering;
 
+import com.dm66.leaguecraft.Summoner;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;

@@ -10,6 +10,7 @@ import net.minecraft.entity.ai.goal.LookAtGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.entity.ai.goal.PanicGoal;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
@@ -48,7 +49,7 @@ public class BlueCasterMinion extends CreatureEntity implements IAnimatable
                 return worldIn.getBlockState(pos).getBlock() instanceof StealthWardBlock;
             }
         });
-        this.goalSelector.addGoal(2, new PanicGoal(this, 1.25d));
+        this.goalSelector.addGoal(0, new LookAtGoal(this, PlayerEntity.class, 10));
     }
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
