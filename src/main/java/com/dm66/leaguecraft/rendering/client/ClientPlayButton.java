@@ -1,4 +1,4 @@
-package com.dm66.leaguecraft.rendering;
+package com.dm66.leaguecraft.rendering.client;
 
 import com.dm66.leaguecraft.LeagueCraftMod;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -11,13 +11,37 @@ import net.minecraft.util.text.StringTextComponent;
 
 public class ClientPlayButton extends Widget
 {
-    public final int WIDTH = 206, HEIGHT = 102;
+    public final int WIDTH = 205, HEIGHT = 110;
 
     private final ResourceLocation texture = new ResourceLocation(LeagueCraftMod.MOD_ID, "textures/gui/client_play_button.png");
 
     public ClientPlayButton(int x, int y, int width, int height)
     {
         super(x, y, width, height, new StringTextComponent(""));
+    }
+
+    public ClientPlayButton(int x, int y)
+    {
+        super(x, y, 41, 11, new StringTextComponent(""));
+    }
+
+    @Override
+    public void onClick(double mouseX, double mouseY)
+    {
+        // TODO: c'mon, do something
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button)
+    {
+        if(!this.clicked(mouseX, mouseY)) return false;
+
+        if(button == 0)
+        {
+            this.onClick(mouseX, mouseY);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -38,11 +62,11 @@ public class ClientPlayButton extends Widget
         minecraft.getTextureManager().bindTexture(texture);
         if(this.isHovered())
         {
-            blit(matrixStack, x, y, width, height, 0, 51, 206, 51, WIDTH, HEIGHT);
+            blit(matrixStack, x, y, width, height, 0, HEIGHT / 2, WIDTH, HEIGHT / 2, WIDTH, HEIGHT);
         }
         else
         {
-            blit(matrixStack, x, y, width, height, 0, 0, 206, 51, WIDTH, HEIGHT);
+            blit(matrixStack, x, y, width, height, 0, 0, WIDTH, HEIGHT / 2, WIDTH, HEIGHT);
         }
     }
 }

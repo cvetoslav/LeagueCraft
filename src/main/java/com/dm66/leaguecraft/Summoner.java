@@ -16,7 +16,13 @@ public class Summoner
     public static HashMap<PlayerEntity, Summoner> summoners = new HashMap<>();
 
     public PlayerEntity player;
-    public boolean inGame;
+
+    public ActivityStatus status;
+
+    public enum ActivityStatus
+    {
+        INGAME, CHAMPSELECT, QUEUE, LOBBY, ONLINE, OFFLINE
+    }
 
     public double health;
     public double maxHealth;
@@ -45,12 +51,12 @@ public class Summoner
     public int RAbilityCD = 0;
 
     // TODO: add champion specific base stats
-     public Champion champion;
+    public Champion champion;
 
     public Summoner(PlayerEntity player)
     {
         this.player = player;
-        inGame = true;
+        status = ActivityStatus.OFFLINE;
         health = 900;
         maxHealth = 1000;
         healthRegen = 0.5;
@@ -98,7 +104,7 @@ public class Summoner
 
     public void addEffect(Effect effect, int duration)
     {
-        if(player.getActivePotionEffect(effect) == null && inGame)
+        if(player.getActivePotionEffect(effect) == null && status == ActivityStatus.INGAME)
         {
             player.addPotionEffect(new EffectInstance(effect, duration));
         }

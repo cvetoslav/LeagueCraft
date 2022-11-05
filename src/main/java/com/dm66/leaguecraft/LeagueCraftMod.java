@@ -101,7 +101,7 @@ public class LeagueCraftMod
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event)
     {
-
+        // TODO: Load Summoners profiles from DB and assign OFFLINE status
     }
 
     @SubscribeEvent
@@ -109,7 +109,7 @@ public class LeagueCraftMod
     {
         //if(Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER)
         {
-            Summoner.addSummoner(event.getPlayer());
+            Summoner.addSummoner(event.getPlayer());  // TODO: set ONLINE status or add summoner if first time
         }
     }
 

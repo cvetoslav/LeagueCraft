@@ -1,28 +1,27 @@
-package com.dm66.leaguecraft.rendering;
+package com.dm66.leaguecraft.rendering.client;
 
 import com.dm66.leaguecraft.LeagueCraftMod;
+import com.dm66.leaguecraft.networking.ClientOnlineUsersPacket;
+import com.dm66.leaguecraft.networking.Networking;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LeagueClientGUI extends Screen
+public class LeagueClientGUI extends Screen implements IGuiEventListener
 {
     private static final int WIDTH = 530, HEIGHT = 360;
 
-    private List<Widget> GUIelements = new ArrayList<>();
+    private List<Widget> GUIelements;
 
-    private int cntr = 0;
+    private int cntr = 100;
 
     private final ResourceLocation GUI = new ResourceLocation(LeagueCraftMod.MOD_ID, "textures/gui/client_gui.png");
 
@@ -37,7 +36,11 @@ public class LeagueClientGUI extends Screen
         int relX = (width - WIDTH/2) / 2;
         int relY = (height - HEIGHT/2) / 2;
 
-        GUIelements.add(new ClientPlayButton(relX + 2,relY + 2,69,17));
+        GUIelements = new ArrayList<>();
+        GUIelements.add(new ClientPlayButton(relX + 2,relY + 2));
+        GUIelements.add(new PlayersListbox(relX + 265 - 55 - 2,relY + 20, 55, 180 - 22));
+
+        for(Widget w : GUIelements) this.addListener(w);
     }
 
     @Override
@@ -50,6 +53,15 @@ public class LeagueClientGUI extends Screen
     public void tick()
     {
         cntr++;
+        if(cntr == 100)
+        {
+            cntr = 0;
+            Networking.sendToServer(new ClientOnlineUsersPacket());
+        }
+    }
+
+    private void updateOnlinePlayers()
+    {
     }
 
     @Override
@@ -64,8 +76,6 @@ public class LeagueClientGUI extends Screen
 
         blit(matrixStack, relX, relY, WIDTH/2, HEIGHT/2, 0, 0, WIDTH, HEIGHT, WIDTH, HEIGHT);
 
-        //drawString(matrixStack, this.minecraft.fontRenderer, "Hello there! " + this.width + "x" + this.height, relX+5, relY+5, 0xff44de33);
-
         for (Widget GUIelement : GUIelements)
         {
             GUIelement.render(matrixStack, mouseX, mouseY, partialTicks);
@@ -77,4 +87,16 @@ public class LeagueClientGUI extends Screen
     {
         Minecraft.getInstance().displayGuiScreen(new LeagueClientGUI());
     }
+
+
+    // Pass GUI event to children cuz wtf?
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button)
+    {
+        boolean ret = false;
+        for(Widget el : GUIelements) ret |= el.mouseReleased(mouseX, mouseY, button);
+        return ret;
+    }
+
 }

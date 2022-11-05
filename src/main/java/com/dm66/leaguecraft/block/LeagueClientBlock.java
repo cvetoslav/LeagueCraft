@@ -1,6 +1,6 @@
 package com.dm66.leaguecraft.block;
 
-import com.dm66.leaguecraft.rendering.LeagueClientGUI;
+import com.dm66.leaguecraft.rendering.client.LeagueClientGUI;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;

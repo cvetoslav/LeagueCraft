@@ -12,6 +12,11 @@ public class ClientOnlineUsersPacket
 
     }
 
+    public ClientOnlineUsersPacket()
+    {
+
+    }
+
     public void encode(PacketBuffer buffer)
     {
 
