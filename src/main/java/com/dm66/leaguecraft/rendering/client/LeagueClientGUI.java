@@ -19,6 +19,8 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
 {
     private static final int WIDTH = 530, HEIGHT = 360;
 
+    public static ContextMenu contextMenu = new ContextMenu();
+
     private List<Widget> GUIelements;
 
     private int cntr = 100;
@@ -41,6 +43,7 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
         GUIelements.add(new PlayersListbox(relX + 265 - 55 - 2,relY + 20, 55, 180 - 22));
 
         for(Widget w : GUIelements) this.addListener(w);
+        this.addListener(contextMenu);
     }
 
     @Override
@@ -80,6 +83,7 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
         {
             GUIelement.render(matrixStack, mouseX, mouseY, partialTicks);
         }
+        contextMenu.render(matrixStack, mouseX, mouseY, partialTicks);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
@@ -90,6 +94,7 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
 
 
     // Pass GUI event to children cuz wtf?
+    // TODO: [FIX] use onDrag method in Widget class
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button)

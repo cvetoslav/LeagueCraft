@@ -36,8 +36,8 @@ public class PlayersListbox extends Widget
         super(x, y, width, height, new StringTextComponent(""));
 
         players = new ArrayList<>();
-        players.add(new PlayerInfo("W. Heisenberg", 69, 2));
-        players.add(new PlayerInfo("Jesse", 1, 1));
+        players.add(new PlayerInfo("W. Heisenberg", 69, 3));
+        players.add(new PlayerInfo("Jesse", 1, 2));
         players.add(new PlayerInfo("Joe Mama", 2, 1));
         players.add(new PlayerInfo("Farmer", 100, 1));
         players.add(new PlayerInfo("vankata", 110, 0));
@@ -53,7 +53,7 @@ public class PlayersListbox extends Widget
     {
         if(this.visible)
         {
-            this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+            this.isHovered = (!LeagueClientGUI.contextMenu.isHovered()) && mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
             renderWidget(matrixStack, mouseX, mouseY, partialTicks);
         }
     }
@@ -106,18 +106,49 @@ public class PlayersListbox extends Widget
     private void drawPlayerBox(MatrixStack matrixStack, int mouseX, int mouseY, int _x, int _y, int ind)
     {
         int color = 0xff0B1B25;
-        if(mouseX >= _x && mouseY >= _y && mouseX < _x + width - 3 - scroll_w && mouseY < _y + item_h)
+        if((!LeagueClientGUI.contextMenu.isHovered()) && mouseX >= _x && mouseY >= _y && mouseX < _x + width - 3 - scroll_w && mouseY < _y + item_h)
         {
             color = 0xff212D35;
             hovered_ind = ind;
         }
         fill(matrixStack, _x, _y, _x + width - 3 - scroll_w, _y + item_h, color);
-        drawString(matrixStack, mc.fontRenderer, players.get(ind).name, _x + 5, _y + item_h / 2, 0xff999588);
+
+        // Player name
+        double scale = 0.5;
+        GL11.glScaled(scale, scale, scale);
+        scale = 1/scale;
+        drawString(matrixStack, mc.fontRenderer, players.get(ind).name, (int) (scale*(_x + 5)), (int) (scale*(_y + 4)), 0xff999588);
+
+        // Player status
+        String txt = "Offline";
+        color = 0xff5B5A56;
+        switch (players.get(ind).status)
+        {
+            case 1:
+                txt = "Online";
+                color = 0xff09A646;
+                break;
+
+            case 2:
+                txt = "In Champion select";
+                color = 0xff0ACBE6;
+                break;
+
+            case 3:
+                txt = "In Game";
+                color = 0xff0ACBE6;
+                break;
+        }
+        scale *= 0.4;
+        GL11.glScaled(scale, scale, scale);
+        scale = 1/0.4;
+        drawString(matrixStack, mc.fontRenderer, txt, (int) (scale*(_x + 5)), (int) (scale*(_y + 12)), color);
+        GL11.glScaled(scale, scale, scale);
     }
 
     private void drawScrollBar(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        this.isScrollHovered = mouseX >= scroll_x && mouseY >= scroll_y && mouseX < scroll_x + scroll_w && mouseY < scroll_y + scroll_h;
+        this.isScrollHovered = (!LeagueClientGUI.contextMenu.isHovered()) && mouseX >= scroll_x && mouseY >= scroll_y && mouseX < scroll_x + scroll_w && mouseY < scroll_y + scroll_h;
 
         int color = 0xff1E2328;
         if(this.isHovered) color = 0xff785A28;
@@ -129,6 +160,8 @@ public class PlayersListbox extends Widget
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
+        if(LeagueClientGUI.contextMenu.isHovered()) return false;
+        else LeagueClientGUI.contextMenu.clear();
         if(button == 0)
         {
             if(isScrollHovered)
@@ -147,7 +180,16 @@ public class PlayersListbox extends Widget
         {
             if(hovered_ind != -1)
             {
-                // TODO: open player context menu
+                // Opens Player context menu
+                List<String> opts = new ArrayList<>();
+                opts.add("Invite to Game");
+                opts.add("Send Message");
+                opts.add("Spectate Game");
+                opts.add("View Profile");
+                opts.add("Unfriend");
+                opts.add("Block");
+
+                LeagueClientGUI.contextMenu.create((int)mouseX, (int)mouseY, opts, null);
             }
             return true;
         }
