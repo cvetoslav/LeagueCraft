@@ -13,6 +13,7 @@ import software.bernie.shadowed.eliotlash.mclib.math.functions.limit.Min;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 public class PlayersListbox extends Widget
 {
@@ -139,9 +140,9 @@ public class PlayersListbox extends Widget
                 color = 0xff0ACBE6;
                 break;
         }
-        scale *= 0.4;
+        /*scale *= 0.4;
         GL11.glScaled(scale, scale, scale);
-        scale = 1/0.4;
+        scale = 1/0.4;*/
         drawString(matrixStack, mc.fontRenderer, txt, (int) (scale*(_x + 5)), (int) (scale*(_y + 12)), color);
         GL11.glScaled(scale, scale, scale);
     }
@@ -182,14 +183,15 @@ public class PlayersListbox extends Widget
             {
                 // Opens Player context menu
                 List<String> opts = new ArrayList<>();
-                opts.add("Invite to Game");
+                List<Function> funcs = new ArrayList<>();
+                opts.add("Invite to Game");     funcs.add(null);
                 opts.add("Send Message");
                 opts.add("Spectate Game");
                 opts.add("View Profile");
                 opts.add("Unfriend");
                 opts.add("Block");
 
-                LeagueClientGUI.contextMenu.create((int)mouseX, (int)mouseY, opts, null);
+                LeagueClientGUI.contextMenu.create((int)mouseX, (int)mouseY, opts, funcs);
             }
             return true;
         }

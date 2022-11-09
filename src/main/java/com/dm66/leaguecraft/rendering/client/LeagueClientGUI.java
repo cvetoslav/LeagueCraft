@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +24,8 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
 
     private List<Widget> GUIelements;
 
-    private int cntr = 100;
-
     private final ResourceLocation GUI = new ResourceLocation(LeagueCraftMod.MOD_ID, "textures/gui/client_gui.png");
+    private final ResourceLocation CURSOR = new ResourceLocation(LeagueCraftMod.MOD_ID, "textures/gui/legacy_cursor.png");
 
     protected LeagueClientGUI()
     {
@@ -44,6 +44,8 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
 
         for(Widget w : GUIelements) this.addListener(w);
         this.addListener(contextMenu);
+
+        GLFW.glfwSetInputMode(minecraft.getMainWindow().getHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
     }
 
     @Override
@@ -55,12 +57,7 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
     @Override
     public void tick()
     {
-        cntr++;
-        if(cntr == 100)
-        {
-            cntr = 0;
-            Networking.sendToServer(new ClientOnlineUsersPacket());
-        }
+
     }
 
     private void updateOnlinePlayers()
@@ -72,11 +69,12 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
     {
         this.renderBackground(matrixStack);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        assert this.minecraft != null;
-        this.minecraft.getTextureManager().bindTexture(GUI);
+
         int relX = (width - WIDTH/2) / 2;
         int relY = (height - HEIGHT/2) / 2;
 
+        // Draw background texture
+        this.minecraft.getTextureManager().bindTexture(GUI);
         blit(matrixStack, relX, relY, WIDTH/2, HEIGHT/2, 0, 0, WIDTH, HEIGHT, WIDTH, HEIGHT);
 
         for (Widget GUIelement : GUIelements)
@@ -84,6 +82,11 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
             GUIelement.render(matrixStack, mouseX, mouseY, partialTicks);
         }
         contextMenu.render(matrixStack, mouseX, mouseY, partialTicks);
+
+        // Draw legacy cursor texture
+        this.minecraft.getTextureManager().bindTexture(CURSOR);
+        blit(matrixStack, mouseX, mouseY, 10, 10, 0, 0, 50, 50, 50, 50);
+
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
