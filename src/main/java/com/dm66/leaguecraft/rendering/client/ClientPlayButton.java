@@ -15,14 +15,17 @@ public class ClientPlayButton extends Widget
 
     private final ResourceLocation texture = new ResourceLocation(LeagueCraftMod.MOD_ID, "textures/gui/client_play_button.png");
 
-    public ClientPlayButton(int x, int y, int width, int height)
+    LeagueClientGUI parent;
+
+    public ClientPlayButton(int x, int y, int width, int height, LeagueClientGUI _p)
     {
         super(x, y, width, height, new StringTextComponent(""));
+        parent = _p;
     }
 
-    public ClientPlayButton(int x, int y)
+    public ClientPlayButton(int x, int y, LeagueClientGUI _p)
     {
-        super(x, y, 41, 11, new StringTextComponent(""));
+        this(x, y, 41, 11, _p);
     }
 
     @Override

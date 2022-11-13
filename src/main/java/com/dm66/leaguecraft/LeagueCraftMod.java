@@ -8,6 +8,8 @@ import com.dm66.leaguecraft.entity.render.BlueCasterMinionRenderer;
 import com.dm66.leaguecraft.item.ModItems;
 import com.dm66.leaguecraft.rendering.IngameHUD;
 import com.dm66.leaguecraft.rendering.WorldProjectionRenderer;
+import com.dm66.leaguecraft.rendering.client.ContentBox;
+import com.dm66.leaguecraft.utils.AnimatedGif;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
@@ -28,6 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.bernie.geckolib3.GeckoLib;
 
+import java.nio.file.Paths;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -38,7 +41,7 @@ public class LeagueCraftMod
     public static final String MOD_ID = "leaguecraft";
 
     // Directly reference a log4j logger.
-    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
 
     public LeagueCraftMod() {
         // Register the setup method for modloading

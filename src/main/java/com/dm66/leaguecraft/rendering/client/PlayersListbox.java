@@ -3,6 +3,7 @@ package com.dm66.leaguecraft.rendering.client;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
@@ -10,9 +11,7 @@ import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.opengl.GL11;
 import software.bernie.shadowed.eliotlash.mclib.math.functions.limit.Min;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 public class PlayersListbox extends Widget
@@ -31,12 +30,29 @@ public class PlayersListbox extends Widget
     List<PlayerInfo> players;
 
     static final Minecraft mc = Minecraft.getInstance();
+    LeagueClientGUI parent;
 
-    public PlayersListbox(int x, int y, int width, int height)
+    public PlayersListbox(int x, int y, int width, int height, LeagueClientGUI _p)
     {
         super(x, y, width, height, new StringTextComponent(""));
+        parent = _p;
 
         players = new ArrayList<>();
+        players.add(new PlayerInfo("W. Heisenberg", 69, 3));
+        players.add(new PlayerInfo("Jesse", 1, 2));
+        players.add(new PlayerInfo("Joe Mama", 2, 1));
+        players.add(new PlayerInfo("Farmer", 100, 1));
+        players.add(new PlayerInfo("vankata", 110, 0));
+        players.add(new PlayerInfo("W. Heisenberg", 69, 3));
+        players.add(new PlayerInfo("Jesse", 1, 2));
+        players.add(new PlayerInfo("Joe Mama", 2, 1));
+        players.add(new PlayerInfo("Farmer", 100, 1));
+        players.add(new PlayerInfo("vankata", 110, 0));
+        players.add(new PlayerInfo("W. Heisenberg", 69, 3));
+        players.add(new PlayerInfo("Jesse", 1, 2));
+        players.add(new PlayerInfo("Joe Mama", 2, 1));
+        players.add(new PlayerInfo("Farmer", 100, 1));
+        players.add(new PlayerInfo("vankata", 110, 0));
         players.add(new PlayerInfo("W. Heisenberg", 69, 3));
         players.add(new PlayerInfo("Jesse", 1, 2));
         players.add(new PlayerInfo("Joe Mama", 2, 1));
@@ -54,7 +70,7 @@ public class PlayersListbox extends Widget
     {
         if(this.visible)
         {
-            this.isHovered = (!LeagueClientGUI.contextMenu.isHovered()) && mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+            this.isHovered = (!parent.getContextMenu().isHovered()) && mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
             renderWidget(matrixStack, mouseX, mouseY, partialTicks);
         }
     }
@@ -107,7 +123,7 @@ public class PlayersListbox extends Widget
     private void drawPlayerBox(MatrixStack matrixStack, int mouseX, int mouseY, int _x, int _y, int ind)
     {
         int color = 0xff0B1B25;
-        if((!LeagueClientGUI.contextMenu.isHovered()) && mouseX >= _x && mouseY >= _y && mouseX < _x + width - 3 - scroll_w && mouseY < _y + item_h)
+        if((!parent.getContextMenu().isHovered()) && mouseX >= _x && mouseY >= _y && mouseX < _x + width - 3 - scroll_w && mouseY < _y + item_h)
         {
             color = 0xff212D35;
             hovered_ind = ind;
@@ -149,7 +165,7 @@ public class PlayersListbox extends Widget
 
     private void drawScrollBar(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        this.isScrollHovered = (!LeagueClientGUI.contextMenu.isHovered()) && mouseX >= scroll_x && mouseY >= scroll_y && mouseX < scroll_x + scroll_w && mouseY < scroll_y + scroll_h;
+        this.isScrollHovered = (!parent.getContextMenu().isHovered()) && mouseX >= scroll_x && mouseY >= scroll_y && mouseX < scroll_x + scroll_w && mouseY < scroll_y + scroll_h;
 
         int color = 0xff1E2328;
         if(this.isHovered) color = 0xff785A28;
@@ -161,8 +177,8 @@ public class PlayersListbox extends Widget
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
-        if(LeagueClientGUI.contextMenu.isHovered()) return false;
-        else LeagueClientGUI.contextMenu.clear();
+        if(parent.getContextMenu().isHovered()) return false;
+        else parent.getContextMenu().clear();
         if(button == 0)
         {
             if(isScrollHovered)
@@ -174,6 +190,7 @@ public class PlayersListbox extends Widget
             else if(hovered_ind != -1)
             {
                 // TODO: open chat with player
+                LeagueClientGUI.contextMenuCallback(2, (Map<String, String>) new HashMap<>().put("player_id", String.valueOf(players.get(hovered_ind).id)));
             }
             return true;
         }
@@ -183,15 +200,18 @@ public class PlayersListbox extends Widget
             {
                 // Opens Player context menu
                 List<String> opts = new ArrayList<>();
-                List<Function> funcs = new ArrayList<>();
-                opts.add("Invite to Game");     funcs.add(null);
-                opts.add("Send Message");
-                opts.add("Spectate Game");
-                opts.add("View Profile");
-                opts.add("Unfriend");
-                opts.add("Block");
+                List<Integer> ids = new ArrayList<>();
+                Map<String, String> data = new HashMap<>();
+                data.put("player_id", String.valueOf(players.get(hovered_ind).id));
 
-                LeagueClientGUI.contextMenu.create((int)mouseX, (int)mouseY, opts, funcs);
+                opts.add("Invite to Game");     ids.add(0);
+                opts.add("Send Message");       ids.add(2);
+                opts.add("Spectate Game");      ids.add(0);
+                opts.add("View Profile");       ids.add(4);
+                opts.add("Unfriend");           ids.add(5);
+                opts.add("Block");              ids.add(6);
+
+                parent.getContextMenu().create((int)mouseX, (int)mouseY, opts, ids, data);
             }
             return true;
         }

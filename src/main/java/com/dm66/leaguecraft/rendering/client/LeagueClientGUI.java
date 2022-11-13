@@ -15,12 +15,11 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class LeagueClientGUI extends Screen implements IGuiEventListener
 {
     private static final int WIDTH = 530, HEIGHT = 360;
-
-    public static ContextMenu contextMenu = new ContextMenu();
 
     private List<Widget> GUIelements;
 
@@ -39,11 +38,15 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
         int relY = (height - HEIGHT/2) / 2;
 
         GUIelements = new ArrayList<>();
-        GUIelements.add(new ClientPlayButton(relX + 2,relY + 2));
-        GUIelements.add(new PlayersListbox(relX + 265 - 55 - 2,relY + 20, 55, 180 - 22));
+
+        GUIelements.add(new ContentBox(relX + 2, relY + 20, 199, 158, this));
+        GUIelements.add(new ClientPlayButton(relX + 2,relY + 2, this));
+        GUIelements.add(new PlayersListbox(relX + 265 - 60 - 2,relY + 20, 60, 158, this));
+
+        GUIelements.add(new ContextMenu(this));  // Has to be the last one in order to render above the other stuff
+
 
         for(Widget w : GUIelements) this.addListener(w);
-        this.addListener(contextMenu);
 
         GLFW.glfwSetInputMode(minecraft.getMainWindow().getHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
     }
@@ -54,14 +57,31 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
         return false;
     }
 
+
+
     @Override
     public void tick()
     {
-
+        getContentBox().tick();
     }
 
-    private void updateOnlinePlayers()
+    public static void contextMenuCallback(int option_id, Map<String, String> data)
     {
+        switch (option_id)
+        {
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+        }
     }
 
     @Override
@@ -78,10 +98,7 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
         blit(matrixStack, relX, relY, WIDTH/2, HEIGHT/2, 0, 0, WIDTH, HEIGHT, WIDTH, HEIGHT);
 
         for (Widget GUIelement : GUIelements)
-        {
             GUIelement.render(matrixStack, mouseX, mouseY, partialTicks);
-        }
-        contextMenu.render(matrixStack, mouseX, mouseY, partialTicks);
 
         // Draw legacy cursor texture
         this.minecraft.getTextureManager().bindTexture(CURSOR);
@@ -98,6 +115,7 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
 
     // Pass GUI event to children cuz wtf?
     // TODO: [FIX] use onDrag method in Widget class
+    // UPD: nvm
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button)
@@ -105,6 +123,26 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
         boolean ret = false;
         for(Widget el : GUIelements) ret |= el.mouseReleased(mouseX, mouseY, button);
         return ret;
+    }
+
+
+    // Widget methods
+
+    public ContextMenu getContextMenu()
+    {
+        return (ContextMenu) GUIelements.get(GUIelements.size() - 1);
+    }
+    public ContentBox getContentBox()
+    {
+        return (ContentBox) GUIelements.get(0);
+    }
+    public ClientPlayButton getPlayButton()
+    {
+        return (ClientPlayButton) GUIelements.get(1);
+    }
+    public PlayersListbox getPlayersListbox()
+    {
+        return (PlayersListbox) GUIelements.get(2);
     }
 
 }
