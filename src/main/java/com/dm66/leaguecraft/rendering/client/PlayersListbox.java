@@ -1,20 +1,16 @@
 package com.dm66.leaguecraft.rendering.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.Mth;
 import org.lwjgl.opengl.GL11;
-import software.bernie.shadowed.eliotlash.mclib.math.functions.limit.Min;
 
 import java.util.*;
-import java.util.function.Function;
 
-public class PlayersListbox extends Widget
+public class PlayersListbox extends AbstractWidget
 {
 
     int scroll_x, scroll_y, scroll_w, scroll_h;
@@ -34,7 +30,7 @@ public class PlayersListbox extends Widget
 
     public PlayersListbox(int x, int y, int width, int height, LeagueClientGUI _p)
     {
-        super(x, y, width, height, new StringTextComponent(""));
+        super(x, y, width, height, new TextComponent(""));
         parent = _p;
 
         players = new ArrayList<>();
@@ -60,13 +56,13 @@ public class PlayersListbox extends Widget
         players.add(new PlayerInfo("vankata", 110, 0));
 
         contentHeight = players.size() * item_h;
-        scroll_h = MathHelper.clamp((height - 2)*(height - 2)/contentHeight, 10, height-2);
+        scroll_h = Mth.clamp((height - 2)*(height - 2)/contentHeight, 10, height-2);
         scroll_w = 1;
         scroll_pos = curr_scroll_pos = 0;
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         if(this.visible)
         {
@@ -75,8 +71,7 @@ public class PlayersListbox extends Widget
         }
     }
 
-    @Override
-    public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         fill(matrixStack, x, y, x+width, y+height, 0xff010B13);
 
@@ -95,17 +90,17 @@ public class PlayersListbox extends Widget
         drawContent(matrixStack, mouseX, mouseY, partialTicks);
     }
 
-    private void drawContent(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    private void drawContent(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        double scale = mc.getMainWindow().getGuiScaleFactor();
+        double scale = mc.getWindow().getGuiScale();
         int bottom = y + height - 1;
         GL11.glEnable(GL11.GL_SCISSOR_TEST);     // Some omega cringe and autistic interaction with content clipping
                                                  // in general we make sure that the coordinates are correctly
                                                  // converted to literally WINDOW pixels, can't tell what this exactly means
-        GL11.glScissor((int)((this.x+1)  * scale), (int)(mc.getMainWindow().getFramebufferHeight() - (bottom * scale)),
+        GL11.glScissor((int)((this.x+1)  * scale), (int)(mc.getWindow().getHeight() - (bottom * scale)),
                 (int)((width - scroll_w - 3) * scale), (int)((height - 2) * scale));
 
-        int scrolled = (int) MathHelper.clamp(curr_scroll_pos * (contentHeight - height + 2), 0, contentHeight);
+        int scrolled = (int) Mth.clamp(curr_scroll_pos * (contentHeight - height + 2), 0, contentHeight);
         int i = scrolled / item_h;
         int rest = scrolled % item_h;
         int _y = y+1 - rest;
@@ -120,7 +115,7 @@ public class PlayersListbox extends Widget
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 
-    private void drawPlayerBox(MatrixStack matrixStack, int mouseX, int mouseY, int _x, int _y, int ind)
+    private void drawPlayerBox(PoseStack matrixStack, int mouseX, int mouseY, int _x, int _y, int ind)
     {
         int color = 0xff0B1B25;
         if((!parent.getContextMenu().isHovered()) && mouseX >= _x && mouseY >= _y && mouseX < _x + width - 3 - scroll_w && mouseY < _y + item_h)
@@ -131,39 +126,38 @@ public class PlayersListbox extends Widget
         fill(matrixStack, _x, _y, _x + width - 3 - scroll_w, _y + item_h, color);
 
         // Player name
-        double scale = 0.5;
-        GL11.glScaled(scale, scale, scale);
+        float scale = 0.5f;
+        matrixStack.scale(scale, scale, scale);
         scale = 1/scale;
-        drawString(matrixStack, mc.fontRenderer, players.get(ind).name, (int) (scale*(_x + 5)), (int) (scale*(_y + 4)), 0xff999588);
+        drawString(matrixStack, mc.font, players.get(ind).name, (int) (scale*(_x + 5)), (int) (scale*(_y + 4)), 0xff999588);
 
         // Player status
         String txt = "Offline";
         color = 0xff5B5A56;
         switch (players.get(ind).status)
         {
-            case 1:
+            case 1 ->
+            {
                 txt = "Online";
                 color = 0xff09A646;
-                break;
-
-            case 2:
+            }
+            case 2 ->
+            {
                 txt = "In Champion select";
                 color = 0xff0ACBE6;
-                break;
-
-            case 3:
+            }
+            case 3 ->
+            {
                 txt = "In Game";
                 color = 0xff0ACBE6;
-                break;
+            }
         }
-        /*scale *= 0.4;
-        GL11.glScaled(scale, scale, scale);
-        scale = 1/0.4;*/
-        drawString(matrixStack, mc.fontRenderer, txt, (int) (scale*(_x + 5)), (int) (scale*(_y + 12)), color);
-        GL11.glScaled(scale, scale, scale);
+
+        drawString(matrixStack, mc.font, txt, (int) (scale*(_x + 5)), (int) (scale*(_y + 12)), color);
+        matrixStack.scale(scale, scale, scale);
     }
 
-    private void drawScrollBar(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    private void drawScrollBar(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         this.isScrollHovered = (!parent.getContextMenu().isHovered()) && mouseX >= scroll_x && mouseY >= scroll_y && mouseX < scroll_x + scroll_w && mouseY < scroll_y + scroll_h;
 
@@ -172,6 +166,11 @@ public class PlayersListbox extends Widget
         if(this.isScrollHovered) color = 0xffCDBE91;
         if(this.isScrollClicked) color = 0xff463714;
         fill(matrixStack, scroll_x, scroll_y, scroll_x + scroll_w, scroll_y + scroll_h, color);
+    }
+
+    @Override
+    public void mouseMoved(double pMouseX, double pMouseY) {
+        super.mouseMoved(pMouseX, pMouseY);
     }
 
     @Override
@@ -252,16 +251,36 @@ public class PlayersListbox extends Widget
         return false;
     }
 
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
+        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean keyReleased(int pKeyCode, int pScanCode, int pModifiers) {
+        return super.keyReleased(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean charTyped(char pCodePoint, int pModifiers) {
+        return super.charTyped(pCodePoint, pModifiers);
+    }
+
     private void recalcScrollBar()
     {
-        scroll_pos = MathHelper.clamp(scroll_pos, 0, 1);
-        curr_scroll_pos = MathHelper.clamp(curr_scroll_pos, 0, 1);
+        scroll_pos = Mth.clamp(scroll_pos, 0, 1);
+        curr_scroll_pos = Mth.clamp(curr_scroll_pos, 0, 1);
 
         scroll_x = x+width - 1 - scroll_w;
         scroll_y = (int) (y + 1 + curr_scroll_pos*(height - 2 - scroll_h));
     }
 
-    private class PlayerInfo
+    @Override
+    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+
+    }
+
+    private static class PlayerInfo
     {
         String name;
         int id;

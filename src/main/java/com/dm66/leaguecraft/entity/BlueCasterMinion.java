@@ -1,19 +1,10 @@
 package com.dm66.leaguecraft.entity;
 
-import com.dm66.leaguecraft.block.StealthWardBlock;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.LookAtGoal;
-import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.entity.ai.goal.MoveToBlockGoal;
-import net.minecraft.entity.ai.goal.PanicGoal;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ambient.AmbientCreature;
+import net.minecraft.world.level.Level;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -22,35 +13,38 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class BlueCasterMinion extends CreatureEntity implements IAnimatable
+public class BlueCasterMinion extends AmbientCreature implements IAnimatable
 {
-    private AnimationFactory factory = new AnimationFactory(this);
+    private final AnimationFactory factory = new AnimationFactory(this);
 
-    protected BlueCasterMinion(EntityType<? extends CreatureEntity> type, World worldIn)
+    protected BlueCasterMinion(EntityType<? extends AmbientCreature> type, Level worldIn)
     {
         super(type, worldIn);
     }
 
-    public static AttributeModifierMap.MutableAttribute setCustomAttributes()
+    public static AttributeSupplier setAttributes()
     {
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 100.0d)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 100.0d)
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 100.0d)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.5d);
+        return AmbientCreature.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 100.0d)
+                .add(Attributes.ATTACK_DAMAGE, 100.0d)
+                .add(Attributes.FOLLOW_RANGE, 100.0d)
+                .add(Attributes.MOVEMENT_SPEED, 0.5d).build();
     }
 
-    @Override
-    protected void registerGoals()
-    {
-        this.goalSelector.addGoal(1, new MoveToBlockGoal(this, 1d, 10) {
-            @Override
-            protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
-                return worldIn.getBlockState(pos).getBlock() instanceof StealthWardBlock;
-            }
-        });
-        this.goalSelector.addGoal(0, new LookAtGoal(this, PlayerEntity.class, 10));
-    }
+
+    //TODO
+
+//    @Override
+//    protected void registerGoals()
+//    {
+//        this.goalSelector.addGoal(1, new MoveToBlockGoal(this, 1d, 10) {
+//            @Override
+//            protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
+//                return worldIn.getBlockState(pos).getBlock() instanceof StealthWardBlock;
+//            }
+//        });
+//        this.goalSelector.addGoal(0, new LookAtGoal(this, PlayerEntity.class, 10));
+//    }
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
     {

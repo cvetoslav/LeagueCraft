@@ -2,12 +2,7 @@ package com.dm66.leaguecraft.entity.model;
 
 import com.dm66.leaguecraft.LeagueCraftMod;
 import com.dm66.leaguecraft.entity.BlueCasterMinion;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class BlueCasterMinionModel extends AnimatedGeoModel<BlueCasterMinion> {

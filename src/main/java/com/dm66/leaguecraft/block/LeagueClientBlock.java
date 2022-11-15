@@ -1,14 +1,14 @@
 package com.dm66.leaguecraft.block;
 
 import com.dm66.leaguecraft.rendering.client.LeagueClientGUI;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 
 public class LeagueClientBlock extends Block
 {
@@ -18,12 +18,10 @@ public class LeagueClientBlock extends Block
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
+    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit)
     {
-        if(!worldIn.isRemote())
-        {
-            LeagueClientGUI.open();
-        }
-        return ActionResultType.SUCCESS;
-   }
+        if(pLevel.isClientSide()) LeagueClientGUI.open();
+        return InteractionResult.SUCCESS;
+    }
+
 }

@@ -1,15 +1,17 @@
 package com.dm66.leaguecraft.rendering.client;
 
 import com.dm66.leaguecraft.LeagueCraftMod;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
-public class ClientPlayButton extends Widget
+public class ClientPlayButton extends AbstractWidget
 {
     public final int WIDTH = 205, HEIGHT = 110;
 
@@ -19,7 +21,7 @@ public class ClientPlayButton extends Widget
 
     public ClientPlayButton(int x, int y, int width, int height, LeagueClientGUI _p)
     {
-        super(x, y, width, height, new StringTextComponent(""));
+        super(x, y, width, height, new TextComponent(""));
         parent = _p;
     }
 
@@ -31,7 +33,12 @@ public class ClientPlayButton extends Widget
     @Override
     public void onClick(double mouseX, double mouseY)
     {
-        // TODO: c'mon, do something
+        // TODO: c'mon, do something (open game mode select)
+    }
+
+    @Override
+    public void mouseMoved(double pMouseX, double pMouseY) {
+        super.mouseMoved(pMouseX, pMouseY);
     }
 
     @Override
@@ -48,7 +55,27 @@ public class ClientPlayButton extends Widget
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
+        return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+    }
+
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
+        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean keyReleased(int pKeyCode, int pScanCode, int pModifiers) {
+        return super.keyReleased(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean charTyped(char pCodePoint, int pModifiers) {
+        return super.charTyped(pCodePoint, pModifiers);
+    }
+
+    @Override
+    public void render(@NotNull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         if (this.visible)
         {
@@ -57,13 +84,12 @@ public class ClientPlayButton extends Widget
         }
     }
 
-    @Override
-    public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        Minecraft minecraft = Minecraft.getInstance();
-        minecraft.getTextureManager().bindTexture(texture);
-        if(this.isHovered())
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, texture);
+        if(this.isHovered)
         {
             blit(matrixStack, x, y, width, height, 0, HEIGHT / 2, WIDTH, HEIGHT / 2, WIDTH, HEIGHT);
         }
@@ -71,5 +97,10 @@ public class ClientPlayButton extends Widget
         {
             blit(matrixStack, x, y, width, height, 0, 0, WIDTH, HEIGHT / 2, WIDTH, HEIGHT);
         }
+    }
+
+    @Override
+    public void updateNarration(@NotNull NarrationElementOutput pNarrationElementOutput) {
+
     }
 }

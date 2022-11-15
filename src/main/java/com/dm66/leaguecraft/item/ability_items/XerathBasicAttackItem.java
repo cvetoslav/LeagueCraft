@@ -2,12 +2,12 @@ package com.dm66.leaguecraft.item.ability_items;
 
 import com.dm66.leaguecraft.Summoner;
 import com.dm66.leaguecraft.entity.BasicAttackProjectile;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class XerathBasicAttackItem extends AbilityItem
 {
@@ -17,23 +17,23 @@ public class XerathBasicAttackItem extends AbilityItem
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
+    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand)
     {
-        ItemStack is = player.getHeldItem(hand);
-        if(!world.isRemote)
+        ItemStack is = pPlayer.getItemInHand(pUsedHand);
+        if(pLevel.isClientSide())
         {
-            Summoner s = Summoner.getSummoner(player);
-            if(s.basicAttackCD > 0) return ActionResult.resultFail(is);
-            LivingEntity entity = getTargetedEntity(player, world, 10);
+            Summoner s = Summoner.getSummoner(pPlayer);
+            if(s.basicAttackCD > 0) return InteractionResultHolder.fail(is);
+            LivingEntity entity = getTargetedEntity(pPlayer, pLevel, 10);
             if(entity != null)
             {
-                BasicAttackProjectile proj = new BasicAttackProjectile(player);
-                proj.setPosition(player.getPosX(), player.getPosY(), player.getPosZ());
+                BasicAttackProjectile proj = new BasicAttackProjectile(pPlayer);
+                proj.copyPosition(pPlayer);
                 proj.setTarget(entity);
-                world.addEntity(proj);
+                pLevel.addFreshEntity(proj);
                 s.basicAttackCD = (int) Math.round(20.0/s.attackSpeed);
             }
         }
-        return ActionResult.resultSuccess(is);
+        return InteractionResultHolder.success(is);
     }
 }

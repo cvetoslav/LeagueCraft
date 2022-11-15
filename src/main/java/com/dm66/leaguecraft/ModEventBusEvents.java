@@ -12,6 +12,6 @@ public class ModEventBusEvents
     @SubscribeEvent
     public static void addEntityAttributes(EntityAttributeCreationEvent event)
     {
-        event.put(ModEntities.BLUE_CASTER_MINION.get(), BlueCasterMinion.setCustomAttributes().create());
+        event.put(ModEntities.BLUE_CASTER_MINION.get(), BlueCasterMinion.setAttributes());
     }
 }

@@ -2,32 +2,23 @@ package com.dm66.leaguecraft.rendering.client;
 
 import com.dm66.leaguecraft.LeagueCraftMod;
 import com.dm66.leaguecraft.utils.AnimatedGif;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.NativeImage;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextComponent;
-import net.minecraftforge.fml.DistExecutor;
-import org.apache.commons.io.IOUtils;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.nio.file.Paths;
-
-public class ContentBox extends Widget
+public class ContentBox extends AbstractWidget
 {
-
     LeagueClientGUI parent;
     public AnimatedGif gifImage;
     public AnimatedGif.GifPlayer gifPlayer;
 
     public ContentBox(int x, int y, int width, int height, LeagueClientGUI _p)
     {
-        super(x, y, width, height, new StringTextComponent(""));
+        super(x, y, width, height, new TextComponent(""));
         parent = _p;
 
 
@@ -37,6 +28,7 @@ public class ContentBox extends Widget
             {
                 gifImage = AnimatedGif.fromInputStream(Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(LeagueCraftMod.MOD_ID, "textures/gui/giphy.gif")).getInputStream());
 
+                assert gifImage != null;
                 gifPlayer = gifImage.makeGifPlayer();
                 gifPlayer.setAutoplay(true);
                 gifPlayer.setLooping(true);
@@ -52,6 +44,11 @@ public class ContentBox extends Widget
     public void tick()
     {
         if(gifPlayer != null) gifPlayer.tick();
+    }
+
+    @Override
+    public void mouseMoved(double pMouseX, double pMouseY) {
+        super.mouseMoved(pMouseX, pMouseY);
     }
 
     @Override
@@ -71,7 +68,27 @@ public class ContentBox extends Widget
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
+        return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+    }
+
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
+        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean keyReleased(int pKeyCode, int pScanCode, int pModifiers) {
+        return super.keyReleased(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean charTyped(char pCodePoint, int pModifiers) {
+        return super.charTyped(pCodePoint, pModifiers);
+    }
+
+    @Override
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         fill(matrixStack, x, y, x + width, y + height, 0xff00ff00);
 
@@ -79,5 +96,10 @@ public class ContentBox extends Widget
 
         int w = gifImage.getWidth(), h = gifImage.getHeight();
         gifPlayer.render(matrixStack, x+width/2-w/8, y+height/2-h/8, w/4, h/4, partialTicks);
+    }
+
+    @Override
+    public void updateNarration(@NotNull NarrationElementOutput pNarrationElementOutput) {
+
     }
 }

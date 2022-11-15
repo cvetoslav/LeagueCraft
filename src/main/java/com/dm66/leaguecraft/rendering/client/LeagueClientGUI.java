@@ -1,34 +1,29 @@
 package com.dm66.leaguecraft.rendering.client;
 
 import com.dm66.leaguecraft.LeagueCraftMod;
-import com.dm66.leaguecraft.networking.ClientOnlineUsersPacket;
-import com.dm66.leaguecraft.networking.Networking;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-public class LeagueClientGUI extends Screen implements IGuiEventListener
+public class LeagueClientGUI extends Screen implements GuiEventListener
 {
     private static final int WIDTH = 530, HEIGHT = 360;
-
-    private List<Widget> GUIelements;
 
     private final ResourceLocation GUI = new ResourceLocation(LeagueCraftMod.MOD_ID, "textures/gui/client_gui.png");
     private final ResourceLocation CURSOR = new ResourceLocation(LeagueCraftMod.MOD_ID, "textures/gui/legacy_cursor.png");
 
     protected LeagueClientGUI()
     {
-        super(new TranslationTextComponent("screen.leaguecraft.client"));
+        super(new TranslatableComponent("screen.leaguecraft.client"));
     }
 
     @Override
@@ -37,18 +32,13 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
         int relX = (width - WIDTH/2) / 2;
         int relY = (height - HEIGHT/2) / 2;
 
-        GUIelements = new ArrayList<>();
+        this.addRenderableWidget(new ContentBox(relX + 2, relY + 20, 199, 158, this));
+        this.addRenderableWidget(new ClientPlayButton(relX + 2,relY + 2, this));
+        this.addRenderableWidget(new PlayersListbox(relX + 265 - 60 - 2,relY + 20, 60, 158, this));
 
-        GUIelements.add(new ContentBox(relX + 2, relY + 20, 199, 158, this));
-        GUIelements.add(new ClientPlayButton(relX + 2,relY + 2, this));
-        GUIelements.add(new PlayersListbox(relX + 265 - 60 - 2,relY + 20, 60, 158, this));
+        this.addRenderableWidget(new ContextMenu(this));  // Has to be the last one in order to render above the other stuff
 
-        GUIelements.add(new ContextMenu(this));  // Has to be the last one in order to render above the other stuff
-
-
-        for(Widget w : GUIelements) this.addListener(w);
-
-        GLFW.glfwSetInputMode(minecraft.getMainWindow().getHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
+        GLFW.glfwSetInputMode(minecraft.getWindow().getWindow(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
     }
 
     @Override
@@ -85,31 +75,31 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void render(@NotNull PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick)
     {
-        this.renderBackground(matrixStack);
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        this.renderBackground(pPoseStack);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         int relX = (width - WIDTH/2) / 2;
         int relY = (height - HEIGHT/2) / 2;
 
         // Draw background texture
-        this.minecraft.getTextureManager().bindTexture(GUI);
-        blit(matrixStack, relX, relY, WIDTH/2, HEIGHT/2, 0, 0, WIDTH, HEIGHT, WIDTH, HEIGHT);
+        RenderSystem.setShaderTexture(0, GUI);
+        blit(pPoseStack, relX, relY, WIDTH/2, HEIGHT/2, 0, 0, WIDTH, HEIGHT, WIDTH, HEIGHT);
 
-        for (Widget GUIelement : GUIelements)
-            GUIelement.render(matrixStack, mouseX, mouseY, partialTicks);
+        // Render widgets
+        super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
 
         // Draw legacy cursor texture
-        this.minecraft.getTextureManager().bindTexture(CURSOR);
-        blit(matrixStack, mouseX, mouseY, 10, 10, 0, 0, 50, 50, 50, 50);
+        RenderSystem.setShaderTexture(0, CURSOR);
+        blit(pPoseStack, pMouseX, pMouseY, 10, 10, 0, 0, 50, 50, 50, 50);
 
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     public static void open()
     {
-        Minecraft.getInstance().displayGuiScreen(new LeagueClientGUI());
+        Minecraft.getInstance().setScreen(new LeagueClientGUI());
     }
 
 
@@ -117,32 +107,32 @@ public class LeagueClientGUI extends Screen implements IGuiEventListener
     // TODO: [FIX] use onDrag method in Widget class
     // UPD: nvm
 
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button)
-    {
-        boolean ret = false;
-        for(Widget el : GUIelements) ret |= el.mouseReleased(mouseX, mouseY, button);
-        return ret;
-    }
+//    @Override
+//    public boolean mouseReleased(double mouseX, double mouseY, int button)
+//    {
+//        boolean ret = false;
+//        for(Widget el : GUIelements) ret |= el.mouseReleased(mouseX, mouseY, button);
+//        return ret;
+//    }
 
 
     // Widget methods
 
     public ContextMenu getContextMenu()
     {
-        return (ContextMenu) GUIelements.get(GUIelements.size() - 1);
+        return (ContextMenu) this.children().get(this.children().size() - 1);
     }
     public ContentBox getContentBox()
     {
-        return (ContentBox) GUIelements.get(0);
+        return (ContentBox) this.children().get(0);
     }
     public ClientPlayButton getPlayButton()
     {
-        return (ClientPlayButton) GUIelements.get(1);
+        return (ClientPlayButton) this.children().get(1);
     }
     public PlayersListbox getPlayersListbox()
     {
-        return (PlayersListbox) GUIelements.get(2);
+        return (PlayersListbox) this.children().get(2);
     }
 
 }

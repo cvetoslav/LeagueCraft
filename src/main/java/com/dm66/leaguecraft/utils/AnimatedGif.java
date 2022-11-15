@@ -1,19 +1,18 @@
 package com.dm66.leaguecraft.utils;
 
 import com.dm66.leaguecraft.LeagueCraftMod;
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.*;
-import net.minecraft.client.resources.data.AnimationFrame;
-import net.minecraft.client.resources.data.AnimationMetadataSection;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
@@ -28,14 +27,13 @@ import java.nio.IntBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.List;
 
 public class AnimatedGif
 {
     private static final int GIF_TICKS_PER_SECOND = 1000;
     private static final int MC_TICKS_PER_SECOND = 20;
-    private static final int MIN_GIF_TICKS = MathHelper.ceil(0.01f * GIF_TICKS_PER_SECOND); // Most browsers have approximately 0.1s minimum interval between frames. Let's respect that!
-    private static final int MIN_MC_TICKS = MathHelper.ceil(MIN_GIF_TICKS * (float)MC_TICKS_PER_SECOND / GIF_TICKS_PER_SECOND);
+    private static final int MIN_GIF_TICKS = Mth.ceil(0.01f * GIF_TICKS_PER_SECOND); // Most browsers have approximately 0.1s minimum interval between frames. Let's respect that!
+    private static final int MIN_MC_TICKS = Mth.ceil(MIN_GIF_TICKS * (float)MC_TICKS_PER_SECOND / GIF_TICKS_PER_SECOND);
 
     public static AnimatedGif fromPath(Path path) throws IOException
     {
@@ -157,7 +155,7 @@ public class AnimatedGif
 
     public NativeImage toNativeImage()
     {
-        NativeImage img = new NativeImage(NativeImage.PixelFormat.RGBA, width, height * frames, false);
+        NativeImage img = new NativeImage(NativeImage.Format.RGBA, width, height * frames, false);
         for (int y = 0; y < height * frames; y++)
         {
             for (int x = 0; x < width; x++)
@@ -170,32 +168,32 @@ public class AnimatedGif
 
     public int convertToMcTick(int delay)
     {
-        return MathHelper.ceil(delay * (float)MC_TICKS_PER_SECOND / GIF_TICKS_PER_SECOND); // gif delays at in 1/100s increments, mc ticks are 1/20
+        return Mth.ceil(delay * (float)MC_TICKS_PER_SECOND / GIF_TICKS_PER_SECOND); // gif delays at in 1/100s increments, mc ticks are 1/20
     }
 
     // UNTESTED!!!
-    public TextureAtlasSprite toAnimatedSprite(ResourceLocation location, AtlasTexture atlas, int mipmapLevels, int atlasWidth, int atlasHeight, int atlasX, int atlasY)
-    {
-        NativeImage img = toNativeImage();
-        List<AnimationFrame> frameList = Lists.newArrayList();
-        int accDelay = 0;
-        for (int i = 0; i < frames; i++)
-        {
-            frameList.add(new AnimationFrame(i, accDelay));
-            accDelay += Math.max(convertToMcTick(delays[i]), MIN_MC_TICKS);
-        }
-        AnimationMetadataSection animation = new AnimationMetadataSection(frameList, width, height, 0, false);
-        TextureAtlasSprite.Info info = new TextureAtlasSprite.Info(location, width, height * frames, animation);
-        return new TextureAtlasSprite(atlas, info, mipmapLevels, atlasWidth, atlasHeight, atlasX, atlasY, img)
-        {
-        };
-    }
+//    public TextureAtlasSprite toAnimatedSprite(ResourceLocation location, AtlasTexture atlas, int mipmapLevels, int atlasWidth, int atlasHeight, int atlasX, int atlasY)
+//    {
+//        NativeImage img = toNativeImage();
+//        List<AnimationFrame> frameList = Lists.newArrayList();
+//        int accDelay = 0;
+//        for (int i = 0; i < frames; i++)
+//        {
+//            frameList.add(new AnimationFrame(i, accDelay));
+//            accDelay += Math.max(convertToMcTick(delays[i]), MIN_MC_TICKS);
+//        }
+//        AnimationMetadataSection animation = new AnimationMetadataSection(frameList, width, height, 0, false);
+//        TextureAtlasSprite.Info info = new TextureAtlasSprite.Info(location, width, height * frames, animation);
+//        return new TextureAtlasSprite(atlas, info, mipmapLevels, atlasWidth, atlasHeight, atlasX, atlasY, img)
+//        {
+//        };
+//    }
 
     public void exportToMcAnim(Path path) throws IOException
     {
         try (NativeImage nativeImage = toNativeImage())
         {
-            nativeImage.write(path);
+            nativeImage.writeToFile(path);
         }
 
         JsonObject meta = new JsonObject();
@@ -275,12 +273,12 @@ public class AnimatedGif
             }
         }
 
-        public void render(MatrixStack matrixStack, int x, int y, int w, int h, float partialTicks)
+        public void render(PoseStack matrixStack, int x, int y, int w, int h, float partialTicks)
         {
             if(glTexture == null)
             {
-                glTexture = tm.getDynamicTextureLocation("giphy", new DynamicTexture(toNativeImage()));
-                //glTexture = new ResourceLocation(LeagueCraftMod.MOD_ID, "textures/gui/client_gui.png");
+                glTexture = new ResourceLocation(LeagueCraftMod.MOD_ID, "dyn_tex/gif");
+                tm.register(glTexture, new DynamicTexture(toNativeImage()));
             }
 
             if (totalFrameTicks == 0)
@@ -292,7 +290,7 @@ public class AnimatedGif
             if (playing)
             {
                 float frameTime = ((animationProgress + partialTicks - partialStart) * (float)GIF_TICKS_PER_SECOND) / MC_TICKS_PER_SECOND;
-                int frameNumber = MathHelper.floor(frameTime) % totalFrameTicks;
+                int frameNumber = Mth.floor(frameTime) % totalFrameTicks;
                 int frameIndex = -1;
                 for (int i = 0; i < delays.length; i++)
                 {
@@ -319,17 +317,20 @@ public class AnimatedGif
                 lastFrame = frameIndex;
             }
 
-            RenderSystem.enableTexture();
-            RenderSystem.enableAlphaTest();
+            //RenderSystem.enableTexture();
+            //RenderSystem.enableAlphaTest();
             RenderSystem.disableBlend();
-            tm.bindTexture(glTexture);
-            AbstractGui.blit(matrixStack, x, y, w, h, 0, lastFrame * height, width, height, width, height * frames);
+
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.setShaderTexture(0, glTexture);
+
+            Gui.blit(matrixStack, x, y, w, h, 0, lastFrame * height, width, height, width, height * frames);
         }
 
         public void close()
         {
-            //TextureUtil.releaseTextureId(glTexture);
-            tm.deleteTexture(glTexture);
+            tm.release(glTexture);
         }
 
         public void setAutoplay(boolean autoplay)

@@ -2,10 +2,11 @@ package com.dm66.leaguecraft;
 
 import com.dm66.leaguecraft.champion.Champion;
 import com.dm66.leaguecraft.item.ability_items.BasicAttackItem;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -13,9 +14,9 @@ import java.util.HashMap;
 
 public class Summoner
 {
-    public static HashMap<PlayerEntity, Summoner> summoners = new HashMap<>();
+    public static HashMap<Player, Summoner> summoners = new HashMap<>();
 
-    public PlayerEntity player;
+    public Player player;
 
     public ActivityStatus status;
 
@@ -53,7 +54,7 @@ public class Summoner
     // TODO: add champion specific base stats
     public Champion champion;
 
-    public Summoner(PlayerEntity player)
+    public Summoner(Player player)
     {
         this.player = player;
         status = ActivityStatus.OFFLINE;
@@ -75,7 +76,7 @@ public class Summoner
     @SubscribeEvent
     public static void tick(TickEvent.PlayerTickEvent event)
     {
-        if(event.phase == TickEvent.Phase.END || event.player.world.isRemote()) return;
+        if(event.phase == TickEvent.Phase.END || !event.player.level.isClientSide()) return;
         Summoner s = Summoner.getSummoner(event.player);
         s.updateCoolDowns();
         s.health += s.healthRegen / 20;
@@ -89,7 +90,7 @@ public class Summoner
         if(basicAttackCD > 0) basicAttackCD--;
         for(int i=0;i<36;i++)
         {
-            ItemStack is = player.inventory.mainInventory.get(i);
+            ItemStack is = player.getInventory().getItem(i);
             if(is.getItem() instanceof BasicAttackItem)
             {
                 is.getItem().setDamage(is, (int) Math.round(10.0*basicAttackCD/Math.round(20.0/attackSpeed)));
@@ -102,11 +103,11 @@ public class Summoner
         if(RAbilityCD > 0) RAbilityCD--;
     }
 
-    public void addEffect(Effect effect, int duration)
+    public void addEffect(MobEffect effect, int duration)
     {
-        if(player.getActivePotionEffect(effect) == null && status == ActivityStatus.INGAME)
+        if(!player.hasEffect(effect) && status == ActivityStatus.INGAME)
         {
-            player.addPotionEffect(new EffectInstance(effect, duration));
+            player.addEffect(new MobEffectInstance(effect, duration));
         }
     }
 
@@ -136,12 +137,12 @@ public class Summoner
         if(shield < 0) health += shield;
     }
 
-    public static Summoner getSummoner(PlayerEntity player)
+    public static Summoner getSummoner(Player player)
     {
         return summoners.get(player);
     }
 
-    public static void addSummoner(PlayerEntity player)
+    public static void addSummoner(Player player)
     {
         summoners.put(player, new Summoner(player));
     }

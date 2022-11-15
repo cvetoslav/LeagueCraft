@@ -1,13 +1,10 @@
 package com.dm66.leaguecraft.networking;
 
-import com.sun.jna.platform.win32.WinDef;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
-
-import java.util.function.Supplier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 public class Networking
 {
@@ -30,7 +27,7 @@ public class Networking
         INSTANCE.sendToServer(packet);
     }
 
-    public static void sendToClient(Object packet, ServerPlayerEntity player)
+    public static void sendToClient(Object packet, ServerPlayer player)
     {
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), packet);
     }

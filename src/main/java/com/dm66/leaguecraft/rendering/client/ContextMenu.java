@@ -1,24 +1,20 @@
 package com.dm66.leaguecraft.rendering.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.sun.media.jfxmedia.events.VideoTrackSizeListener;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
-public class ContextMenu extends Widget
+public class ContextMenu extends AbstractWidget
 {
     final static int border_w = 1;
     final static int padding = 3;
     final static int option_h = 10;
-    final static double scale = 0.5;
+    final static float scale = 0.5f;
     List<String> options;
     List<Integer> option_ids;
     Map<String, String> data;
@@ -30,11 +26,11 @@ public class ContextMenu extends Widget
 
     public ContextMenu(LeagueClientGUI _p)
     {
-        super(0,0,0,0, new StringTextComponent(""));
+        super(0,0,0,0, new TextComponent(""));
         parent = _p;
     }
 
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         if(this.visible)
         {
@@ -43,8 +39,7 @@ public class ContextMenu extends Widget
         }
     }
 
-    @Override
-    public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         fillGradient(matrixStack, this.x, this.y, this.x + width, this.y + height, 0xff463714, 0xff795B29);
         fill(matrixStack, this.x + border_w, this.y + border_w, this.x + width - border_w, this.y + height - border_w, 0xff010A13);
@@ -52,7 +47,7 @@ public class ContextMenu extends Widget
         int box_x = this.x + border_w, box_y = this.y + border_w, box_w = this.width - 2 * border_w;
         hovered_ind = -1;
 
-        GL11.glScaled(scale, scale, scale);
+        matrixStack.scale(scale, scale, scale);
 
         for(int i = 0; i < sz; i++)
         {
@@ -65,15 +60,14 @@ public class ContextMenu extends Widget
                 hovered_ind = i;
                 color = 0xffF0E6D2;
             }
-            drawString(matrixStack, mc.fontRenderer, options.get(i), (int) ((box_x + padding) / scale), (int) ((box_y + padding) / scale), color);
+            drawString(matrixStack, mc.font, options.get(i), (int) ((box_x + padding) / scale), (int) ((box_y + padding) / scale), color);
 
             box_y += option_h;
         }
 
-        GL11.glScaled(1/scale, 1/scale, 1/scale);
+        matrixStack.scale(1/scale, 1/scale, 1/scale);
     }
 
-    @Override
     public boolean isHovered() {
         return this.isHovered && this.visible;
     }
@@ -102,9 +96,14 @@ public class ContextMenu extends Widget
 
         int min_w = 0;
         for(String s : opts)
-            min_w = (int) Math.max(min_w, scale * mc.fontRenderer.getStringWidth(s));
+            min_w = (int) Math.max(min_w, scale * mc.font.width(s));
         min_w += 2 * (padding + border_w);
         this.width = Math.max(width, min_w);
+    }
+
+    @Override
+    public void mouseMoved(double pMouseX, double pMouseY) {
+        super.mouseMoved(pMouseX, pMouseY);
     }
 
     @Override
@@ -117,5 +116,30 @@ public class ContextMenu extends Widget
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
+        return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+    }
+
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
+        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean keyReleased(int pKeyCode, int pScanCode, int pModifiers) {
+        return super.keyReleased(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean charTyped(char pCodePoint, int pModifiers) {
+        return super.charTyped(pCodePoint, pModifiers);
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+
     }
 }

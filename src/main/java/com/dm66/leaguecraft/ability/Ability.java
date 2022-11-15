@@ -2,7 +2,7 @@ package com.dm66.leaguecraft.ability;
 
 import com.dm66.leaguecraft.Summoner;
 import com.dm66.leaguecraft.item.ability_items.AbilityItem;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 public interface Ability
 {

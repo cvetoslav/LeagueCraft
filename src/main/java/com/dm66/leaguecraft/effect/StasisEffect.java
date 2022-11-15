@@ -1,39 +1,37 @@
 package com.dm66.leaguecraft.effect;
 
 import com.dm66.leaguecraft.Summoner;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectType;
-import net.minecraft.potion.EffectUtils;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
-public class StasisEffect extends Effect
+public class StasisEffect extends MobEffect
 {
     public StasisEffect()
     {
-        this(EffectType.NEUTRAL, 0xf5ef42);
+        this(MobEffectCategory.NEUTRAL, 0xf5ef42);
     }
 
-    public StasisEffect(EffectType effectType, int color)
+    public StasisEffect(MobEffectCategory category, int color)
     {
-        super(effectType, color);
+        super(category, color);
     }
 
     @Override
-    public void performEffect(LivingEntity entity, int amp)
+    public void applyEffectTick(LivingEntity entity, int amp)
     {
-        if(entity instanceof PlayerEntity)
+        if(entity instanceof Player)
         {
-            Summoner s = Summoner.getSummoner((PlayerEntity) entity);
+            // TODO
+            /*Summoner s = Summoner.getSummoner((Player) entity);
             if(s == null) return ;
-            s.health -= 10;
+            s.health -= 10;*/
         }
     }
 
     @Override
-    public boolean isReady(int duration, int amp)
-    {
-        if(duration % 20 == 0) return true;
-        return false;
+    public boolean isDurationEffectTick(int pDuration, int pAmplifier) {
+        return true;
     }
 }

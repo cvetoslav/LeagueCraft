@@ -1,13 +1,13 @@
 package com.dm66.leaguecraft.networking;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
 public class ClientOnlineUsersPacket
 {
-    public ClientOnlineUsersPacket(PacketBuffer buffer)
+    public ClientOnlineUsersPacket(FriendlyByteBuf buffer)
     {
 
     }
@@ -17,7 +17,7 @@ public class ClientOnlineUsersPacket
 
     }
 
-    public void encode(PacketBuffer buffer)
+    public void encode(FriendlyByteBuf buffer)
     {
 
     }

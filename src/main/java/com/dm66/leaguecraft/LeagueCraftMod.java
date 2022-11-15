@@ -8,23 +8,19 @@ import com.dm66.leaguecraft.entity.render.BlueCasterMinionRenderer;
 import com.dm66.leaguecraft.item.ModItems;
 import com.dm66.leaguecraft.rendering.IngameHUD;
 import com.dm66.leaguecraft.rendering.WorldProjectionRenderer;
-import com.dm66.leaguecraft.rendering.client.ContentBox;
-import com.dm66.leaguecraft.utils.AnimatedGif;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,7 +60,7 @@ public class LeagueCraftMod
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(new IngameHUD());
+        //MinecraftForge.EVENT_BUS.register(new IngameHUD(Minecraft.getInstance()));
         MinecraftForge.EVENT_BUS.register(WorldProjectionRenderer.class);
         MinecraftForge.EVENT_BUS.register(Summoner.class);
     }
@@ -78,13 +74,8 @@ public class LeagueCraftMod
 
     private void doClientStuff(final FMLClientSetupEvent event)
     {
-        registerEntityModels(event.getMinecraftSupplier());
-    }
-
-    private void registerEntityModels(Supplier<Minecraft> mc)
-    {
-        RenderingRegistry.registerEntityRenderingHandler(ModEntities.AUTO_ATTACK_PROJECTILE.get(), BasicAttackProjectileRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(ModEntities.BLUE_CASTER_MINION.get(), BlueCasterMinionRenderer::new);
+        EntityRenderers.register(ModEntities.AUTO_ATTACK_PROJECTILE.get(), BasicAttackProjectileRenderer::new);
+        EntityRenderers.register(ModEntities.BLUE_CASTER_MINION.get(), BlueCasterMinionRenderer::new);
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)
@@ -102,7 +93,7 @@ public class LeagueCraftMod
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
-    public void onServerStarting(FMLServerStartingEvent event)
+    public void onServerStarting(ServerStartingEvent event)
     {
         // TODO: Load Summoners profiles from DB and assign OFFLINE status
     }
@@ -116,14 +107,4 @@ public class LeagueCraftMod
         }
     }
 
-    // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
-    // Event bus for receiving Registry Events)
-    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
-    public static class RegistryEvents {
-        @SubscribeEvent
-        public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
-            // register a new block here
-            LOGGER.info("HELLO from Register Block");
-        }
-    }
 }
