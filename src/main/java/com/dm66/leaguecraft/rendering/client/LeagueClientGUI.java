@@ -53,6 +53,7 @@ public class LeagueClientGUI extends Screen implements GuiEventListener
     public void tick()
     {
         getContentBox().tick();
+        getPlayButton().tick();
     }
 
     public static void contextMenuCallback(int option_id, Map<String, String> data)
@@ -107,13 +108,13 @@ public class LeagueClientGUI extends Screen implements GuiEventListener
     // TODO: [FIX] use onDrag method in Widget class
     // UPD: nvm
 
-//    @Override
-//    public boolean mouseReleased(double mouseX, double mouseY, int button)
-//    {
-//        boolean ret = false;
-//        for(Widget el : GUIelements) ret |= el.mouseReleased(mouseX, mouseY, button);
-//        return ret;
-//    }
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button)
+    {
+        boolean ret = false;
+        for(GuiEventListener el : this.children()) ret |= el.mouseReleased(mouseX, mouseY, button);
+        return ret;
+    }
 
 
     // Widget methods

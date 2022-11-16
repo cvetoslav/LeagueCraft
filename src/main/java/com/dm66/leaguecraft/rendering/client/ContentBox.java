@@ -13,14 +13,13 @@ import org.jetbrains.annotations.NotNull;
 public class ContentBox extends AbstractWidget
 {
     LeagueClientGUI parent;
-    public AnimatedGif gifImage;
-    public AnimatedGif.GifPlayer gifPlayer;
+    AnimatedGif gifImage;
+    AnimatedGif.GifPlayer gifPlayer;
 
     public ContentBox(int x, int y, int width, int height, LeagueClientGUI _p)
     {
         super(x, y, width, height, new TextComponent(""));
         parent = _p;
-
 
         new Thread(() ->
         {
@@ -28,8 +27,7 @@ public class ContentBox extends AbstractWidget
             {
                 gifImage = AnimatedGif.fromInputStream(Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(LeagueCraftMod.MOD_ID, "textures/gui/giphy.gif")).getInputStream());
 
-                assert gifImage != null;
-                gifPlayer = gifImage.makeGifPlayer();
+                gifPlayer = gifImage.makeGifPlayer("test_gif1");
                 gifPlayer.setAutoplay(true);
                 gifPlayer.setLooping(true);
 

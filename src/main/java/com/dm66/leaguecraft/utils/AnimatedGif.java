@@ -210,9 +210,9 @@ public class AnimatedGif
         }
     }
 
-    public GifPlayer makeGifPlayer()
+    public GifPlayer makeGifPlayer(String id)
     {
-        return new GifPlayer();
+        return new GifPlayer(id);
     }
 
     public class GifPlayer implements AutoCloseable
@@ -231,9 +231,11 @@ public class AnimatedGif
         private boolean looping = true;
         private final TextureManager tm = Minecraft.getInstance().textureManager;
 
-        private GifPlayer()
+        private GifPlayer(String id)
         {
             totalFrameTicks = Arrays.stream(delays).map(d -> Math.max(MIN_GIF_TICKS, d)).sum();
+            glTexture = new ResourceLocation(LeagueCraftMod.MOD_ID, "dyn_tex/gif_" + id);
+            tm.register(glTexture, new DynamicTexture(toNativeImage()));
         }
 
         public void reset()
@@ -275,11 +277,6 @@ public class AnimatedGif
 
         public void render(PoseStack matrixStack, int x, int y, int w, int h, float partialTicks)
         {
-            if(glTexture == null)
-            {
-                glTexture = new ResourceLocation(LeagueCraftMod.MOD_ID, "dyn_tex/gif");
-                tm.register(glTexture, new DynamicTexture(toNativeImage()));
-            }
 
             if (totalFrameTicks == 0)
                 return;
@@ -332,6 +329,8 @@ public class AnimatedGif
         {
             tm.release(glTexture);
         }
+
+        public boolean isPlaying(){return playing;}
 
         public void setAutoplay(boolean autoplay)
         {

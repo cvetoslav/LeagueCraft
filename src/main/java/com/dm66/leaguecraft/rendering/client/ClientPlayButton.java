@@ -1,6 +1,7 @@
 package com.dm66.leaguecraft.rendering.client;
 
 import com.dm66.leaguecraft.LeagueCraftMod;
+import com.dm66.leaguecraft.utils.AnimatedGif;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -13,9 +14,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class ClientPlayButton extends AbstractWidget
 {
-    public final int WIDTH = 205, HEIGHT = 110;
+    public final int WIDTH = 210, HEIGHT = 55;
 
-    private final ResourceLocation texture = new ResourceLocation(LeagueCraftMod.MOD_ID, "textures/gui/client_play_button.png");
+    AnimatedGif play_button_gif, play_button_hovered_gif;
+    AnimatedGif.GifPlayer play_button, play_button_hovered;
 
     LeagueClientGUI parent;
 
@@ -23,11 +25,36 @@ public class ClientPlayButton extends AbstractWidget
     {
         super(x, y, width, height, new TextComponent(""));
         parent = _p;
+
+        new Thread(() ->
+        {
+            try
+            {
+                play_button_gif = AnimatedGif.fromInputStream(Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(LeagueCraftMod.MOD_ID, "textures/gui/play_button.gif")).getInputStream());
+                play_button_hovered_gif = AnimatedGif.fromInputStream(Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(LeagueCraftMod.MOD_ID, "textures/gui/play_button_hover.gif")).getInputStream());
+
+                play_button = play_button_gif.makeGifPlayer("gui_play_button");
+                play_button_hovered = play_button_hovered_gif.makeGifPlayer("gui_play_button_hovered");
+
+                play_button.setAutoplay(true); play_button.setLooping(true);
+                play_button_hovered.setAutoplay(true); play_button_hovered.setLooping(true);
+
+            }catch (Exception e){e.printStackTrace();}
+        }).start();
     }
 
     public ClientPlayButton(int x, int y, LeagueClientGUI _p)
     {
-        this(x, y, 41, 11, _p);
+        this(x, y, 42, 11, _p);
+    }
+
+    public void tick()
+    {
+        if(play_button != null && play_button_hovered != null)
+        {
+            play_button.tick();
+            play_button_hovered.tick();
+        }
     }
 
     @Override
@@ -86,17 +113,16 @@ public class ClientPlayButton extends AbstractWidget
 
     public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, texture);
-        if(this.isHovered)
+        if(play_button == null || play_button_hovered == null) return;
+
+        if(!play_button.isPlaying())   // Sync the animations of both the gifs
         {
-            blit(matrixStack, x, y, width, height, 0, HEIGHT / 2, WIDTH, HEIGHT / 2, WIDTH, HEIGHT);
+            play_button.start(partialTicks);
+            play_button_hovered.start(partialTicks);
         }
-        else
-        {
-            blit(matrixStack, x, y, width, height, 0, 0, WIDTH, HEIGHT / 2, WIDTH, HEIGHT);
-        }
+
+        if(this.isHovered) play_button_hovered.render(matrixStack, x, y, width, height, partialTicks);
+        else play_button.render(matrixStack, x, y, width, height, partialTicks);
     }
 
     @Override
